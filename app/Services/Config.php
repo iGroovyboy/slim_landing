@@ -11,13 +11,19 @@ class Config
     public const CONFIG_DIR = 'config';
     public const PUBLIC_DIR = 'public';
 
-    protected const APP_CONFIG_FILE = 'app.json';
+    protected static string $rootPath = '';
+    protected static string $configFilename = 'app.json';
 
     protected static $config = [];
 
-    public static function get($name, $default = '')
+    public static function get($key, $default = null)
     {
-        return self::$config[$name] ?? $default;
+         return self::$config[$key] ?? ($default ?: null);
+    }
+
+    public static function has($key)
+    {
+        return isset(self::$config[$key]);
     }
 
     public static function set($name, $value)
@@ -27,7 +33,17 @@ class Config
 
     protected static function getConfigPath()
     {
-        return ROOT_DIR . DS . self::CONFIG_DIR . DS . self::APP_CONFIG_FILE;
+        return self::$rootPath . DIRECTORY_SEPARATOR . self::CONFIG_DIR . DIRECTORY_SEPARATOR . self::$configFilename;
+    }
+
+    public static function setRootPath(string $path)
+    {
+        self::$rootPath = $path;
+    }
+
+    public static function setConfigFilename(string $filename)
+    {
+        self::$configFilename = $filename;
     }
 
     /**
@@ -47,15 +63,22 @@ class Config
     /**
      * Loads config data from a json file
      *
+     * @param string|null $path
+     *
      * @return string|false
      */
-    public static function load()
+    public static function load(string $full_path = null)
     {
-        $rawFile = file_get_contents(self::getConfigPath());
+        $rawFile = file_get_contents($full_path ?: self::getConfigPath());
         if ($rawFile) {
             self::$config = json_decode($rawFile, true);
         }
 
         return $rawFile;
+    }
+
+    public static function clear()
+    {
+        self::$config = [];
     }
 }
