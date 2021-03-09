@@ -35,4 +35,6 @@ $app->get('/', function (Request $request, Response $response, $args) {
 
 $app->get('/help', \App\Controllers\HelpController::class);
 
+$app->get('/about', \App\Controllers\AboutController::class);
+
 $app->run();

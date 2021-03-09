@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\Services\Config;
+use App\Models\Config;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 

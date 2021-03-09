@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services\DB;
+namespace App\Models\DB;
 
 
 class Option

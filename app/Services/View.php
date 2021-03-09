@@ -12,7 +12,7 @@ class View
         $this->config = $config;
     }
 
-    public function render($template, $vars): string
+    public static function render($template, $vars): string
     {
 //        echo $config::APP_DIR;
 //        $x = $this->get('config');
