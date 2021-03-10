@@ -12,7 +12,7 @@ class View
         $this->config = $config;
     }
 
-    public static function render($template, $vars): string
+    public static function render($template, array $vars = []): string
     {
 //        echo $config::APP_DIR;
 //        $x = $this->get('config');
@@ -23,10 +23,10 @@ class View
 //        echo $config::APP_DIR;
 
 
-
+        // TODO get all folders from config
         $loader = new \Twig\Loader\FilesystemLoader(THEMES_DIR . '/default/');
         $twig = new \Twig\Environment($loader, [
-            'cache' => PUB_DIR . '/cache',
+            'cache' => ROOT_DIR . '/public/cache',
         ]);
 
         return $twig->render($template, $vars);

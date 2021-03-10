@@ -16,6 +16,11 @@ class Config
 
     protected static $config = [];
 
+    public function __invoke($filename)
+    {
+
+    }
+
     public static function get($key, $default = null)
     {
          return self::$config[$key] ?? ($default ?: null);
@@ -46,6 +51,11 @@ class Config
         self::$configFilename = $filename;
     }
 
+    public static function use($filename)
+    {
+        self::setConfigFilename($filename);
+        return self::load();
+    }
     /**
      * Save config data to a json file
      *

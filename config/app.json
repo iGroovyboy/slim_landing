@@ -1,1 +1,9 @@
-{}
+{
+  "paths": {
+      "root": ".",
+      "themes": "/themes",
+      "public": "/public",
+      "cache": "/public/cache",
+      "app": "/app"
+  }
+}

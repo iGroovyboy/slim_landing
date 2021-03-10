@@ -1,38 +1,13 @@
 <?php
-use DI\Container;
+
+use App\Services\Config;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Factory\AppFactory;
-
-chdir(dirname(__DIR__ ));
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../app/boot.php' ;
 
-
-define('DS', DIRECTORY_SEPARATOR);
-define('ROOT_DIR', realpath(__DIR__ . '/..') );
-define('THEMES_DIR',  realpath(ROOT_DIR . '/app/Themes') );
-
-
-// Create Container using PHP-DI
-$container = new Container();
-
-// Set container to create App with on AppFactory
-AppFactory::setContainer($container);
-
-$app = AppFactory::create();
-
-$container->set('config', function () {
-    return new \App\Services\Config();
-});
-
-\App\Services\DB\DB::setDriver('sqlite');
-
-
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Hello world! " . __DIR__);
-    return $response;
-});
+$app->get('/', \App\Controllers\HomeController::class);
 
 $app->get('/help', \App\Controllers\HelpController::class);
 
