@@ -11,6 +11,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT_DIR', realpath(__DIR__ . '/..') );
+define('THEMES_DIR',  realpath(ROOT_DIR . '/app/Themes') );
 
 
 // Create Container using PHP-DI
@@ -25,7 +26,7 @@ $container->set('config', function () {
     return new \App\Services\Config();
 });
 
-
+\App\Services\DB\DB::setDriver('sqlite');
 
 
 $app->get('/', function (Request $request, Response $response, $args) {

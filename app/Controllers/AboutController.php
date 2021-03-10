@@ -17,11 +17,6 @@ class AboutController extends BaseController
     protected const TABLE_NAMEX = 'protected nodesxxxxx';
     public const TABLE_NAMEx = 'nodesxxxxx';
 
-    public function __construct(ContainerInterface $container, View $view)
-    {
-        parent::__construct($container, $view);
-    }
-
     public function default(): string
     {
 //        $someVar = Config::get('someVar');
@@ -30,7 +25,7 @@ class AboutController extends BaseController
 //
 //        $data = DB::query("SELECT * ...");
 
-        Node::of('Page', 3)->getAll('element');
+        Node::of('Page', 3)->test('element');
 //        Node::of('Page', 3)->get('element', 'li');
 //        Node::of('Page', 12)->get('element', '123');
 //
@@ -42,8 +37,8 @@ class AboutController extends BaseController
 //        Node::of('Page', 12)->delete('element', 'header');
 //        Node::of('Page', 12)->delete('element', ['footer', 'body']);
 
-
-//        return View::render('about.html', ['some' => $someVar]);
+	    return $this->view->render('help.html', ['go' => "about!", 'data' => "data"]);
+//        return View::render('about.html', ['some' => '67']);
     }
 
 }

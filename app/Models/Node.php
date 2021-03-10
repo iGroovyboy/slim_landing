@@ -8,7 +8,7 @@ use App\Services\DB\DB;
 
 class Node
 {
-    protected const TABLE_NAME = 'nodes';
+	public const TABLE_NAME = 'nodes';
 
     protected static string $type;
     protected static $id;
@@ -43,30 +43,30 @@ class Node
 
     public function getAll(string $type)
     {
-        $x   = debug_backtrace();
-        $z   = $x[1]['object'];
-        $obj = $z::TABLE_NAMEx;
-        echo "!!!!!!!!!!!!!!!!! " . $obj;
     }
 
     public function update(string $type, $id, $value = null)
     {
-        DB::in(self::TABLE_NAME)->delete($type, $id)->get();
+        DB::delete($type, $id)->get();
     }
 
     public function delete(string $type, $id)
     {
-        DB::in(self::TABLE_NAME)->delete($type, $id)->get();
+        DB::delete($type, $id)->get();
     }
 
     public function deleteAll(string $type)
     {
-        DB::in(self::TABLE_NAME)->deleteAll();
+        DB::deleteAll();
     }
 
     public function create(string $type, $slug = null, $value = null)
     {
-        DB::in(self::TABLE_NAME)->insertRow($type, $slug, $value)->get();
+        DB::insertRow($type, $slug, $value)->get();
     }
+
+	public function test( string $string ) {
+    	DB::test('cookoo');
+	}
 
 }

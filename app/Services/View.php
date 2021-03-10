@@ -24,7 +24,7 @@ class View
 
 
 
-        $loader = new \Twig\Loader\FilesystemLoader(APP_DIR . '/Themes/default/');
+        $loader = new \Twig\Loader\FilesystemLoader(THEMES_DIR . '/default/');
         $twig = new \Twig\Environment($loader, [
             'cache' => PUB_DIR . '/cache',
         ]);
