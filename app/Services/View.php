@@ -22,7 +22,6 @@ class View
 //
 //        echo $config::APP_DIR;
 
-
         // TODO get all folders from config
         $loader = new \Twig\Loader\FilesystemLoader(THEMES_DIR . '/default/');
         $twig = new \Twig\Environment($loader, [

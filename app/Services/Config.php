@@ -4,91 +4,109 @@
 namespace App\Services;
 
 
-class Config
-{
+class Config {
+	protected static string $configDir = 'config';
+	protected static string $configFilename = 'app.json';
 
-    public const APP_DIR = 'app';
-    public const CONFIG_DIR = 'config';
-    public const PUBLIC_DIR = 'public';
+	static $config = [];
 
-    protected static string $rootPath = '';
-    protected static string $configFilename = 'app.json';
+	public function __invoke( $filename ) {
 
-    protected static $config = [];
+	}
 
-    public function __invoke($filename)
-    {
+	public static function get( $section, $key = null, $default = null ) {
+		if ( $key ) {
+			return self::$config[ $section ][ $key ] ?? ( $default ?: null );
+		}
 
-    }
+		return self::$config[ $section ] ?? ( $default ?: null );
+	}
 
-    public static function get($key, $default = null)
-    {
-         return self::$config[$key] ?? ($default ?: null);
-    }
+	public static function has( $section, $key = null ) {
+		return $key
+			? isset( self::$config[ $section ][ $key ] )
+			: isset( self::$config[ $section ] );
+	}
 
-    public static function has($key)
-    {
-        return isset(self::$config[$key]);
-    }
+	public static function set( $name, $value ) {
+		self::$config[ $name ] = $value;
+	}
 
-    public static function set($name, $value)
-    {
-        self::$config[$name] = $value;
-    }
+	protected static function getConfigPath() {
+		return ROOT_DIR . DIRECTORY_SEPARATOR . self::$configDir . DIRECTORY_SEPARATOR;
+	}
 
-    protected static function getConfigPath()
-    {
-        return self::$rootPath . DIRECTORY_SEPARATOR . self::CONFIG_DIR . DIRECTORY_SEPARATOR . self::$configFilename;
-    }
+	public static function setRootPath( string $path ) {
+		self::$rootPath = $path;
+	}
 
-    public static function setRootPath(string $path)
-    {
-        self::$rootPath = $path;
-    }
+	public static function setConfigDir( string $dir ) {
+		self::$configDir = $dir;
+	}
 
-    public static function setConfigFilename(string $filename)
-    {
-        self::$configFilename = $filename;
-    }
+	public static function setConfigFilename( string $filename ) {
+		self::$configFilename = $filename;
+	}
 
-    public static function use($filename)
-    {
-        self::setConfigFilename($filename);
-        return self::load();
-    }
-    /**
-     * Save config data to a json file
-     *
-     * @return string|false
-     */
-    public static function save()
-    {
-        return file_put_contents(
-            self::getConfigPath(),
-            json_encode(self::$config),
-            LOCK_EX
-        );
-    }
+	public static function use( $filename ) {
+		self::setConfigFilename( $filename );
 
-    /**
-     * Loads config data from a json file
-     *
-     * @param string|null $path
-     *
-     * @return string|false
-     */
-    public static function load(string $full_path = null)
-    {
-        $rawFile = file_get_contents($full_path ?: self::getConfigPath());
-        if ($rawFile) {
-            self::$config = json_decode($rawFile, true);
-        }
+		return self::load();
+	}
 
-        return $rawFile;
-    }
+	/**
+	 * Save config data to a json file
+	 *
+	 * @return string|false
+	 */
+	public static function save() {
+		return file_put_contents(
+			self::getConfigPath(),
+			json_encode( self::$config ),
+			LOCK_EX
+		);
+	}
 
-    public static function clear()
-    {
-        self::$config = [];
-    }
+	/**
+	 * Loads config data from a json file
+	 *
+	 * @param string|null $path
+	 *
+	 * @return string|false
+	 */
+	public static function load( string $filename = null ) {
+
+		$path = self::getConfigPath() . $filename;
+
+		$rawFile = file_get_contents( $path );
+
+		if ( $rawFile ) {
+			$section                  = pathinfo( $path )['filename'];
+			self::$config[ $section ] = json_decode( $rawFile, true );
+		}
+
+		return $rawFile;
+	}
+
+	public static function loadAll( $dir = null ) {
+		$dir  = $dir ?? self::$configDir;
+		$path = realpath( ROOT_DIR . DIRECTORY_SEPARATOR . $dir );
+
+		self::setConfigDir( $dir ?? self::$configDir );
+
+		if ( ! is_dir( $path ) ) {
+		}
+		if ( ! file_exists( $path ) ) {
+		}
+
+		$files = array_diff( scandir( $path ), array( '..', '.', 'readme.md' ) );
+
+		foreach ( $files as $file ) {
+			self::load( $file );
+		}
+	}
+
+	public static function clear() {
+		self::$config = [];
+	}
 }

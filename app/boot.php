@@ -5,8 +5,8 @@ use DI\Container;
 use Slim\Factory\AppFactory;
 
 define('DS', DIRECTORY_SEPARATOR);
-define('ROOT_DIR', realpath(__DIR__ . '/..') );
-define('THEMES_DIR',  realpath(ROOT_DIR . '/themes') );
+define('ROOT_DIR', realpath(__DIR__ . '/..'));
+define('THEMES_DIR', realpath(ROOT_DIR . '/themes'));
 
 // Container setup
 $container = new Container();
@@ -14,12 +14,11 @@ $container = new Container();
 AppFactory::setContainer($container);
 
 $app = AppFactory::create();
-//
+
 //$container->set('config', function () {
 //    return new \App\Services\Config();
 //});
 
-Config::use('app.json');
+Config::loadAll('config');
 
-// TODO get from config
-\App\Services\DB\DB::setDriver('sqlite');
+\App\Services\DB\DB::setDriver(Config::get('db', 'driver'));

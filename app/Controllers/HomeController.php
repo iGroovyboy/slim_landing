@@ -10,9 +10,7 @@ class HomeController extends BaseController
 {
     public function default(): string
     {
-        Config::use('db.json');
-
-        if ( ! Config::has('driver')) {
+        if ( ! Config::has('db', 'driver')) {
             return (new InstallController($this->container, $this->view))->default();
         }
 
