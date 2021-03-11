@@ -40,7 +40,6 @@ class DB
 	    $backtrace = debug_backtrace();
 	    $caller    = $backtrace[2]['object'];
 
-//	    return $caller::TABLE_NAME;
-	    var_dump($caller::TABLE_NAME);
+	    return $caller::TABLE_NAME;
     }
 }

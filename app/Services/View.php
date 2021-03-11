@@ -31,4 +31,14 @@ class View
         return $twig->render($template, $vars);
     }
 
+    public function renderTheme($theme, $template, array $vars = [])
+    {
+        $loader = new \Twig\Loader\FilesystemLoader(THEMES_DIR . '/' . $theme);
+        $twig = new \Twig\Environment($loader, [
+            'cache' => ROOT_DIR . '/public/cache',
+        ]);
+
+        return $twig->render($template, $vars);
+    }
+
 }

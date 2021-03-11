@@ -8,6 +8,6 @@ class InstallController extends BaseController
 {
     public function default(): string
     {
-        return $this->view->render('install.html');
+        return $this->view->renderTheme('install', 'install.html');
     }
 }
