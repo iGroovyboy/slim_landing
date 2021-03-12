@@ -13,11 +13,6 @@ $container = new Container();
 AppFactory::setContainer($container);
 
 $app = AppFactory::create();
-//
-//$container->set('config', function () {
-//    return new \App\Services\Config();
-//});
-
 
 Config::setPropertyAccessor(
     PropertyAccess::createPropertyAccessorBuilder()

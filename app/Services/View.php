@@ -35,29 +35,18 @@ class View
         }
 
         $themesDir = ROOT_DIR . DIRECTORY_SEPARATOR . Config::get('app/paths/themes') . DIRECTORY_SEPARATOR;
-
-        $ext = self::getEngineFromFileExtension($filename);
-
         $theme     = Config::get('app/theme') ?: 'default';
         $themePath = $themesDir . $theme . DIRECTORY_SEPARATOR;
+        $ext       = self::getEngineFromFileExtension($themePath . $filename);
+
         if ( ! file_exists($themePath)) {
             $themePath = $themesDir . 'default' . DIRECTORY_SEPARATOR;
         }
 
         if ('twig' === $ext) {
-            $twigOptions = [];
-            if (Config::get('cache/twig/caching_enabled')) {
-                $twigOptions['cache'] = ROOT_DIR . '/cache';
-            }
-
-            $twig = new \Twig\Environment(
-                new \Twig\Loader\FilesystemLoader($themePath),
-                $twigOptions
-            );
-
-            $html = $twig->render("$filename.$ext", $vars);
+            $html = self::renderTWIG($themePath, $filename, $ext, $vars);
         } else {
-            $html = include("$themePath$filename.$ext");
+            $html = self::renderPHP("$themePath$filename.$ext", $vars);
         }
 
         if (Config::get('cache/enabled')) {
@@ -65,6 +54,58 @@ class View
         }
 
         return $html;
+    }
+
+    /**
+     * @param string $themePath
+     * @param string $filename
+     * @param string $ext
+     * @param array $vars
+     *
+     * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    protected static function renderTWIG(string $themePath, string $filename, string $ext, array $vars): string
+    {
+        $twigOptions = [];
+        if (Config::get('cache/twig/caching_enabled')) {
+            $twigOptions['cache'] = ROOT_DIR . '/cache';
+        }
+
+        $twig = new \Twig\Environment(
+            new \Twig\Loader\FilesystemLoader($themePath),
+            $twigOptions
+        );
+
+        $html = $twig->render("$filename.$ext", $vars);
+
+        return $html;
+    }
+
+    protected static function renderPHP($file, $vars = []): string
+    {
+        $level = ob_get_level();
+
+        ob_start();
+
+        try {
+            extract($vars);
+            include($file);
+        } catch (\Exception $e) {
+            // used to handle exceptions properly when using output buffering
+            // for rendering a view which may or may not be using output buffering
+            while (ob_get_level() > $level) {
+                ob_end_clean();
+            }
+
+            throw $e;
+        }
+
+        $xx = ob_get_clean();
+
+        return $xx;
     }
 
 

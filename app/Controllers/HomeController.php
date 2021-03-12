@@ -14,6 +14,6 @@ class HomeController extends BaseController
 //            return (new InstallController($this->container, $this->view))->default();
 //        }
 
-        return $this->view->render('home');
+        return $this->view->render('home', ['http'=>'sdfsdfsd;fm;sdlf']);
     }
 }
