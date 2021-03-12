@@ -1,0 +1,8 @@
+{
+    "enabled": true,
+
+    "twig": {
+        "caching_enabled": false,
+        "cache_dir": "twig"
+    }
+}

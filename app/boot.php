@@ -3,10 +3,9 @@
 use App\Services\Config;
 use DI\Container;
 use Slim\Factory\AppFactory;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
-define('DS', DIRECTORY_SEPARATOR);
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
-define('THEMES_DIR', realpath(ROOT_DIR . '/themes'));
 
 // Container setup
 $container = new Container();
@@ -14,11 +13,26 @@ $container = new Container();
 AppFactory::setContainer($container);
 
 $app = AppFactory::create();
-
+//
 //$container->set('config', function () {
 //    return new \App\Services\Config();
 //});
 
-Config::loadAll('config');
 
-\App\Services\DB\DB::setDriver(Config::get('db', 'driver'));
+Config::setPropertyAccessor(
+    PropertyAccess::createPropertyAccessorBuilder()
+        ->enableExceptionOnInvalidIndex()
+        ->getPropertyAccessor()
+);
+
+Config::loadAll();
+Config::set( 'app/paths/root', ROOT_DIR );
+
+$x = Config::get('app');
+
+try {
+    \App\Services\DB\DB::setDriver(Config::get('db/driver'));
+} catch (Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
+    //dump($e);
+}
+

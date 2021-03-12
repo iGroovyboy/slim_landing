@@ -4,109 +4,138 @@
 namespace App\Services;
 
 
-class Config {
-	protected static string $configDir = 'config';
-	protected static string $configFilename = 'app.json';
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
-	static $config = [];
+class Config
+{
+    protected static string $configDir = 'config';
+    protected static string $configFilename = 'app.json';
 
-	public function __invoke( $filename ) {
+    static $config = [];
+    static $propertyAccessor;
 
-	}
+    public static function setPropertyAccessor($propertyAccessor)
+    {
+        self::$propertyAccessor = $propertyAccessor;
+    }
 
-	public static function get( $section, $key = null, $default = null ) {
-		if ( $key ) {
-			return self::$config[ $section ][ $key ] ?? ( $default ?: null );
-		}
+    public function __invoke($filename)
+    {
+        return self::$config;
+    }
 
-		return self::$config[ $section ] ?? ( $default ?: null );
-	}
+    public static function get($propertyPath, $default = null)
+    {
+        $path = self::convertPathToArrayNotation($propertyPath);
 
-	public static function has( $section, $key = null ) {
-		return $key
-			? isset( self::$config[ $section ][ $key ] )
-			: isset( self::$config[ $section ] );
-	}
+        return self::$propertyAccessor->getValue(self::$config, $path) ?: $default;
+    }
 
-	public static function set( $name, $value ) {
-		self::$config[ $name ] = $value;
-	}
+    public static function set($propertyPath, $value)
+    {
+        $path = self::convertPathToArrayNotation($propertyPath);
 
-	protected static function getConfigPath() {
-		return ROOT_DIR . DIRECTORY_SEPARATOR . self::$configDir . DIRECTORY_SEPARATOR;
-	}
+        self::$propertyAccessor->setValue(self::$config, $path, $value);
+    }
 
-	public static function setRootPath( string $path ) {
-		self::$rootPath = $path;
-	}
+    /**
+     * Converts path like 'app/section/key' to '[app][section][key]'
+     *
+     * @param $propertyPath
+     *
+     * @return string
+     */
+    protected static function convertPathToArrayNotation($propertyPath): string
+    {
+        return '[' . str_replace('/', '][', $propertyPath) . ']';
+    }
 
-	public static function setConfigDir( string $dir ) {
-		self::$configDir = $dir;
-	}
+    public static function has($propertyPath)
+    {
+        return self::$propertyAccessor->getValue(self::$config, $propertyPath);
+    }
 
-	public static function setConfigFilename( string $filename ) {
-		self::$configFilename = $filename;
-	}
+    protected static function getConfigPath()
+    {
+        return ROOT_DIR . DIRECTORY_SEPARATOR . self::$configDir . DIRECTORY_SEPARATOR;
+    }
 
-	public static function use( $filename ) {
-		self::setConfigFilename( $filename );
+    public static function setConfigDir(string $dir)
+    {
+        self::$configDir = $dir;
+    }
 
-		return self::load();
-	}
+    public static function setConfigFilename(string $filename)
+    {
+        self::$configFilename = $filename;
+    }
 
-	/**
-	 * Save config data to a json file
-	 *
-	 * @return string|false
-	 */
-	public static function save() {
-		return file_put_contents(
-			self::getConfigPath(),
-			json_encode( self::$config ),
-			LOCK_EX
-		);
-	}
+    public static function use($filename)
+    {
+        self::setConfigFilename($filename);
 
-	/**
-	 * Loads config data from a json file
-	 *
-	 * @param string|null $path
-	 *
-	 * @return string|false
-	 */
-	public static function load( string $filename = null ) {
+        return self::load($filename);
+    }
 
-		$path = self::getConfigPath() . $filename;
+    /**
+     * Save config data to json files
+     *
+     * @return string|false
+     */
+    public static function save()
+    {
+        $keys  = array_keys(self::$config);
+        $saved = [];
+        foreach ($keys as $key) {
+            $filename         = "$key.json";
+            $saved[$filename] = file_put_contents(
+                self::getConfigPath() . $filename,
+                json_encode(self::$config),
+                LOCK_EX
+            );
+        }
+    }
 
-		$rawFile = file_get_contents( $path );
+    /**
+     * Loads config data from a specific json file ONLY
+     *
+     * @param string|null $path
+     *
+     * @return string|false
+     */
+    public static function load(string $filename = null)
+    {
+        $path = self::getConfigPath() . $filename;
 
-		if ( $rawFile ) {
-			$section                  = pathinfo( $path )['filename'];
-			self::$config[ $section ] = json_decode( $rawFile, true );
-		}
+        $rawFile = file_get_contents($path);
 
-		return $rawFile;
-	}
+        if ($rawFile) {
+            $section                = pathinfo($path)['filename'];
+            self::$config[$section] = json_decode($rawFile, true);
+        }
 
-	public static function loadAll( $dir = null ) {
-		$dir  = $dir ?? self::$configDir;
-		$path = realpath( ROOT_DIR . DIRECTORY_SEPARATOR . $dir );
+        return $rawFile;
+    }
 
-		self::setConfigDir( $dir ?? self::$configDir );
+    public static function loadAll()
+    {
+        $dir  = self::$configDir;
+        $path = realpath(ROOT_DIR . DIRECTORY_SEPARATOR . $dir);
 
-		if ( ! is_dir( $path ) ) {
-		}
-		if ( ! file_exists( $path ) ) {
-		}
+        if ( ! is_dir($path)) {
+        }
+        if ( ! file_exists($path)) {
+        }
 
-		$files = array_diff( scandir( $path ), array( '..', '.', 'readme.md' ) );
+        $files = array_diff(scandir($path), array('..', '.', 'readme.md'));
 
-		foreach ( $files as $file ) {
-			self::load( $file );
-		}
-	}
+        foreach ($files as $file) {
+            self::load($file);
+        }
+    }
 
-	public static function clear() {
-		self::$config = [];
-	}
+    public static function clear()
+    {
+        self::$config = [];
+    }
 }

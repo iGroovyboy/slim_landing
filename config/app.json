@@ -1,9 +1,10 @@
 {
-  "paths": {
-      "root": ".",
-      "themes": "/themes",
-      "public": "/public",
-      "cache": "/public/cache",
-      "app": "/app"
-  }
+    "paths": {
+        "root": ".",
+        "themes": "themes",
+        "public": "public",
+        "cache": "cache",
+        "app": "app"
+    },
+    "theme": "default"
 }

@@ -10,10 +10,10 @@ class HomeController extends BaseController
 {
     public function default(): string
     {
-        if ( ! Config::has('db', 'driver')) {
-            return (new InstallController($this->container, $this->view))->default();
-        }
+//        if ( ! Config::has('db', 'driver')) {
+//            return (new InstallController($this->container, $this->view))->default();
+//        }
 
-        return $this->view->render('home.html');
+        return $this->view->render('home');
     }
 }

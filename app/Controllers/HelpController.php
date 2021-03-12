@@ -11,9 +11,6 @@ class HelpController extends BaseController
 
     public function default(): string
     {
-
-
-
-        return $this->view->render('help.html', ['go' => "HELP2+ world!"]);
+        return $this->view->render('help', ['go' => "HELP2+ world!"]);
     }
 }
