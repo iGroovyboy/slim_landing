@@ -6,6 +6,7 @@ use Slim\Factory\AppFactory;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
+define('DS', DIRECTORY_SEPARATOR);
 
 // Container setup
 $container = new Container();
@@ -19,11 +20,8 @@ Config::setPropertyAccessor(
         ->enableExceptionOnInvalidIndex()
         ->getPropertyAccessor()
 );
-
 Config::loadAll();
 Config::set( 'app/paths/root', ROOT_DIR );
-
-$x = Config::get('app');
 
 try {
     \App\Services\DB\DB::setDriver(Config::get('db/driver'));

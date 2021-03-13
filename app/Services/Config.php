@@ -31,6 +31,15 @@ class Config
         return self::$propertyAccessor->getValue(self::$config, $path) ?: $default;
     }
 
+    public static function getPath($path, $suffix = ''): string
+    {
+        $path = str_replace(['/', '\\'], DS, Config::get($path));
+
+        $path = Path::replaceKeysInPath( $path, self::get('app/paths') );
+
+        return ROOT_DIR . DS . $path . DS . $suffix;
+    }
+
     public static function set($propertyPath, $value)
     {
         $path = self::convertPathToArrayNotation($propertyPath);

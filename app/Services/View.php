@@ -4,19 +4,18 @@
 namespace App\Services;
 
 
-use function Composer\Autoload\includeFile;
-use function PHPUnit\Framework\fileExists;
+use App\Services\TemplatesCache\TemplateCacheItem;
 
 class View
 {
     public const PHP_TEMPLATE = 'php';
     public const TWIG_TEMPLATE = 'twig';
 
-    public function __construct(Config $config)
+    public function __construct(Config $config, HtmlCache $htmlCache)
     {
-        $this->config = $config;
+        $this->config    = $config;
+        $this->htmlCache = $htmlCache;
     }
-
 
     private static function getEngineFromFileExtension(string $filename)
     {
@@ -30,17 +29,18 @@ class View
     // TODO: add caching using ob_clean..
     public function render(string $filename, array $vars = [])
     {
-        if (Config::get('cache/enabled') && Cache::has($filename)) {
-            return Cache::get($filename);
+        if (Config::get('cache/enabled') && $this->htmlCache->has($filename)) {
+            return $this->htmlCache->get($filename);
         }
 
-        $themesDir = ROOT_DIR . DIRECTORY_SEPARATOR . Config::get('app/paths/themes') . DIRECTORY_SEPARATOR;
+//        $themesDir = ROOT_DIR . DS . Config::get('app/paths/themes') . DS;
+        $themesDir = Config::getPath('app/paths/themes');
         $theme     = Config::get('app/theme') ?: 'default';
-        $themePath = $themesDir . $theme . DIRECTORY_SEPARATOR;
+        $themePath = $themesDir . $theme . DS;
         $ext       = self::getEngineFromFileExtension($themePath . $filename);
 
         if ( ! file_exists($themePath)) {
-            $themePath = $themesDir . 'default' . DIRECTORY_SEPARATOR;
+            $themePath = $themesDir . 'default' . DS;
         }
 
         if ('twig' === $ext) {
@@ -50,7 +50,7 @@ class View
         }
 
         if (Config::get('cache/enabled')) {
-            Cache::set($filename, $html);
+            $this->htmlCache->set($filename, $html, Config::get('cache/expiresAfter'));
         }
 
         return $html;
@@ -103,15 +103,7 @@ class View
             throw $e;
         }
 
-        $xx = ob_get_clean();
-
-        return $xx;
+        return ob_get_clean();
     }
-
-
-    protected function buildUsing($renderer)
-    {
-    }
-
 
 }
