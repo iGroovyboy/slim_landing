@@ -16,6 +16,13 @@ final class TemplateCacheItem implements CacheItemInterface
     public function __construct($key)
     {
         $this->key = $key;
+
+        // TODO
+//        $this->expiry = 123123;
+
+//        if () {
+//            $this->isHit = true;
+//        }
     }
 
     /**
@@ -39,7 +46,7 @@ final class TemplateCacheItem implements CacheItemInterface
      */
     public function isHit()
     {
-        // TODO: Implement isHit() method.
+        return $this->isHit;
     }
 
     /**
@@ -48,6 +55,8 @@ final class TemplateCacheItem implements CacheItemInterface
     public function set($value)
     {
         $this->value = $value;
+
+        return $this;
     }
 
     /**
@@ -55,7 +64,15 @@ final class TemplateCacheItem implements CacheItemInterface
      */
     public function expiresAt($expiration)
     {
-        // TODO: Implement expiresAt() method.
+        if (null === $expiration) {
+            $this->expiry = null;
+        } elseif ($expiration instanceof \DateTimeInterface) {
+            $this->expiry = (float)$expiration->format('U.u');
+        } else {
+            throw new \Exception(sprintf('Expiration date must implement DateTimeInterface or be null, "%s" given.', get_debug_type($expiration)));
+        }
+
+        return $this;
     }
 
     /**
@@ -63,6 +80,16 @@ final class TemplateCacheItem implements CacheItemInterface
      */
     public function expiresAfter($time)
     {
-        // TODO: Implement expiresAfter() method.
+        if (null === $time) {
+            $this->expiry = null;
+        } elseif ($time instanceof \DateInterval) {
+            $this->expiry = microtime(true) + \DateTime::createFromFormat('U', 0)->add($time)->format('U.u');
+        } elseif (\is_int($time)) {
+            $this->expiry = $time + microtime(true);
+        } else {
+            throw new \Exception(sprintf('Expiration date must be an integer, a DateInterval or null, "%s" given.', get_debug_type($time)));
+        }
+
+        return $this;
     }
 }

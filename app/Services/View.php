@@ -29,11 +29,17 @@ class View
     // TODO: add caching using ob_clean..
     public function render(string $filename, array $vars = [])
     {
-        if (Config::get('cache/enabled') && $this->htmlCache->has($filename)) {
-            return $this->htmlCache->get($filename);
+        if (
+            Config::get('cache/enabled')
+            && $this->htmlCache->has($filename)
+            && ! empty($cachedHtml = $this->htmlCache->get($filename))
+        ) {
+            return $cachedHtml;
         }
 
-//        $themesDir = ROOT_DIR . DS . Config::get('app/paths/themes') . DS;
+        $has = $this->htmlCache->has($filename);
+        $cachedHtml = $this->htmlCache->get($filename);
+
         $themesDir = Config::getPath('app/paths/themes');
         $theme     = Config::get('app/theme') ?: 'default';
         $themePath = $themesDir . $theme . DS;

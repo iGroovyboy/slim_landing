@@ -10,10 +10,12 @@ use App\Services\TemplatesCache\TemplatesCache;
 class HtmlCache implements \Psr\SimpleCache\CacheInterface
 {
     protected TemplatesCache $pool;
+    protected string $ext = '.html';
 
     public function __construct(TemplatesCache $pool)
     {
         $this->pool = $pool;
+        $this->ext  = '.' . Config::get('cache/html_extension');
     }
 
     /**
@@ -21,7 +23,7 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
      */
     public function get($key, $default = null)
     {
-        $item = $this->pool->getItem($key);
+        $item = $this->pool->getItem($key . $this->ext);
 
         return $item->isHit() ? $item->get() : $default;
     }
@@ -31,7 +33,7 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        $cacheItem = new TemplateCacheItem($key);
+        $cacheItem = new TemplateCacheItem($key . $this->ext);
         $cacheItem->set($value)->expiresAfter($ttl);
 
         $this->pool->save($cacheItem);
@@ -42,7 +44,7 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
      */
     public function delete($key)
     {
-        $this->pool->deleteItem($key);
+        $this->pool->deleteItem($key . $this->ext);
     }
 
     /**
@@ -67,7 +69,7 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
     public function setMultiple($values, $ttl = null)
     {
         foreach ($values as $key => $value) {
-            $this->set($key, $value, $ttl);
+            $this->set($key . $this->ext, $value, $ttl);
         }
     }
 
@@ -84,6 +86,6 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
      */
     public function has($key)
     {
-        return $this->pool->hasItem($key);
+        return $this->pool->hasItem($key . $this->ext);
     }
 }

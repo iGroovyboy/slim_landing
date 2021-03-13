@@ -1,6 +1,7 @@
 {
     "enabled": true,
     "expiresAfter": 604800,
+    "html_extension": "html",
 
     "twig": {
         "caching_enabled": false,
