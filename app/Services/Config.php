@@ -11,6 +11,8 @@ class Config
     protected static string $configDir = 'config';
     protected static string $configFilename = 'app.json';
 
+    static string $assetsDir = 'assets';
+
     static $config = [];
     static $propertyAccessor;
 

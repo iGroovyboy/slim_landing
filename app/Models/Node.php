@@ -8,7 +8,7 @@ use App\Services\DB\DB;
 
 class Node extends Model
 {
-	public const TABLE_NAME = 'nodes';
+    public const TABLE_NAME = 'nodes';
 
     public function __construct()
     {
@@ -29,9 +29,10 @@ class Node extends Model
         return new static();
     }
 
-	public function test( string $string ) {
-    	DB::test('cookoo');
-	}
+    public function test(string $string)
+    {
+        DB::test('cookoo');
+    }
 
     public static function createTable()
     {
@@ -55,21 +56,22 @@ class Node extends Model
             `parent_id` BIGINT,
             PRIMARY KEY `id`
         )";
-	}
+    }
 
-	// Node::of('Page', 3 )::get();
-	// Node::of('Page', 3 )::get('element', 'li');
-	public static function get(string $option = null, $default = null)
+    // Node::of('Page', 3 )::get();
+    // Node::of('Page', 3 )::get('element', 'li');
+    public static function get(string $option = null, $default = null)
     {
-//        if(only_parent || only_noparent){
+        $parentEmpty = empty(self::$parentType);
+        $childEmpty  = empty($option);
 
-//        } elseif (both){
-//}
-        !empty(self::$parentType)
-        if(){
+        $hasOnlyParent = ! $parentEmpty && $childEmpty;
+        $hasOnlyChild  = $parentEmpty && ! $childEmpty;
 
+        if ($hasOnlyParent || $hasOnlyChild) {
+            //get
         } else {
-
+            //get + get
         }
 
 
@@ -97,8 +99,6 @@ class Node extends Model
     {
         return DB::query("DELETE FROM {self::TABLE_NAME}")->exec();
     }
-
-
 
 
 }

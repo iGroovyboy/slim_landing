@@ -15,7 +15,20 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
     public function __construct(TemplatesCache $pool)
     {
         $this->pool = $pool;
-        $this->ext  = '.' . Config::get('cache/html_extension');
+    }
+
+    public function setCacheDir(string $path)
+    {
+        $this->pool->setCacheDir($path);
+
+        return $this;
+    }
+
+    public function setCacheExtension(string $ext)
+    {
+        $this->ext = '.' . $ext;
+
+        return $this;
     }
 
     /**

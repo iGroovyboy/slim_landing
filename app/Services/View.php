@@ -11,10 +11,49 @@ class View
     public const PHP_TEMPLATE = 'php';
     public const TWIG_TEMPLATE = 'twig';
 
+    private $theme;
+    private $theme_path;
+
     public function __construct(Config $config, HtmlCache $htmlCache)
     {
         $this->config    = $config;
         $this->htmlCache = $htmlCache;
+
+        $this->htmlCache->setCacheDir(Config::getPath('app/paths/cache'));
+        $this->htmlCache->setCacheExtension(Config::get('cache/html_extension'));
+
+        $this->theme      = Config::get('app/theme') ?: 'default';
+        $this->theme_path = Config::getPath('app/paths/themes') . $this->theme . DS;
+    }
+
+    /**
+     * @param string $themePath
+     * @param string $theme
+     */
+    protected function createAssetsLink(): void
+    {
+        $originalDir    = $this->theme_path . Config::$assetsDir . DS;
+        $publicThemeDir = Config::getPath('app/paths/public')
+                          . Config::get('app/paths/themes')
+                          . DS . $this->theme;
+        $link           = $publicThemeDir . DS . Config::$assetsDir . DS;
+
+        if (is_link($link)) {
+            return;
+        }
+
+        $mkdir = mkdir($publicThemeDir, 0664); //0775?
+        if ( ! $mkdir) {
+            if ( ! file_exists($mkdir) || ! is_dir($mkdir)) {
+                // TODO log?
+            }
+        }
+
+        $symlink = symlink($originalDir, $link);
+
+        if ( ! $symlink) {
+            // TODO log?
+        }
     }
 
     private static function getEngineFromFileExtension(string $filename)
@@ -26,7 +65,6 @@ class View
         return self::TWIG_TEMPLATE;
     }
 
-    // TODO: add caching using ob_clean..
     public function render(string $filename, array $vars = [])
     {
         if (
@@ -34,22 +72,25 @@ class View
             && $this->htmlCache->has($filename)
             && ! empty($cachedHtml = $this->htmlCache->get($filename))
         ) {
+            $this->createAssetsLink();
+
             return $cachedHtml;
         }
 
-        $themesDir = Config::getPath('app/paths/themes');
-        $theme     = Config::get('app/theme') ?: 'default';
-        $themePath = $themesDir . $theme . DS;
-        $ext       = self::getEngineFromFileExtension($themePath . $filename);
+        $ext = self::getEngineFromFileExtension($this->theme_path . $filename);
 
-        if ( ! file_exists($themePath)) {
-            $themePath = $themesDir . 'default' . DS;
+        if (Config::get('app/theme_dev')) {
+            $this->createAssetsLink();
+        }
+
+        if ( ! file_exists($this->theme_path)) {
+            $this->theme_path = Config::getPath('app/paths/themes') . 'default' . DS;
         }
 
         if ('twig' === $ext) {
-            $html = self::renderTWIG($themePath, $filename, $ext, $vars);
+            $html = self::renderTWIG($this->theme_path, $filename, $ext, $vars);
         } else {
-            $html = self::renderPHP("$themePath$filename.$ext", $vars);
+            $html = self::renderPHP("$this->theme_path$filename.$ext", $vars);
         }
 
         if (Config::get('cache/enabled')) {
@@ -107,6 +148,14 @@ class View
         }
 
         return ob_get_clean();
+    }
+
+    public static function themeActivate(string $theme)
+    {
+    }
+
+    public static function themeDeactivate(string $theme = null)
+    {
     }
 
 }

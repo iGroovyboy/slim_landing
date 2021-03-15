@@ -6,5 +6,6 @@
         "cache": "{public}/cache",
         "app": "app"
     },
-    "theme": "default"
+    "theme": "unfold",
+    "theme_dev": true
 }

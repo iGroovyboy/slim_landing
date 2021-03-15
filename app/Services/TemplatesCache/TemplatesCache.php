@@ -14,7 +14,11 @@ class TemplatesCache implements CacheItemPoolInterface
 
     public function __construct()
     {
-        $this->cache_dir = Config::getPath('app/paths/cache');
+    }
+
+    public function setCacheDir(string $path)
+    {
+        $this->cache_dir = $path;
     }
 
     public function getItem($key)
@@ -39,7 +43,7 @@ class TemplatesCache implements CacheItemPoolInterface
 
     public function hasItem($key)
     {
-        $path = Config::getPath('app/paths/cache', $key);
+        $path = $this->cache_dir . $key;
 
         return file_exists($path);
     }
@@ -79,7 +83,7 @@ class TemplatesCache implements CacheItemPoolInterface
 
     public function save(CacheItemInterface $item)
     {
-        return file_put_contents($this->cache_dir .$item->getKey(), $item->get());
+        return file_put_contents($this->cache_dir . $item->getKey(), $item->get());
     }
 
     public function saveDeferred(CacheItemInterface $item)

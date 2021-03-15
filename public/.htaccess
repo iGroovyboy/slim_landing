@@ -3,6 +3,10 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    # Allows to use symlink for themes assetes
+    # Options SymLinksIfOwnerMatch
+    Options +FollowSymLinks
+
     RewriteEngine On
 
     # Redirect Trailing Slashes If Not A Folder...
