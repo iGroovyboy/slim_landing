@@ -37,9 +37,6 @@ class View
             return $cachedHtml;
         }
 
-        $has = $this->htmlCache->has($filename);
-        $cachedHtml = $this->htmlCache->get($filename);
-
         $themesDir = Config::getPath('app/paths/themes');
         $theme     = Config::get('app/theme') ?: 'default';
         $themePath = $themesDir . $theme . DS;
