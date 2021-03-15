@@ -19,11 +19,11 @@ class View
         $this->config    = $config;
         $this->htmlCache = $htmlCache;
 
-        $this->htmlCache->setCacheDir(Config::getPath('app/paths/cache'));
-        $this->htmlCache->setCacheExtension(Config::get('cache/html_extension'));
-
         $this->theme      = Config::get('app/theme') ?: 'default';
         $this->theme_path = Config::getPath('app/paths/themes') . $this->theme . DS;
+
+        $this->htmlCache->setCacheDir(Config::getPath('app/paths/cache') . $this->theme . DS);
+        $this->htmlCache->setCacheExtension(Config::get('cache/html_extension'));
     }
 
     /**
@@ -76,6 +76,8 @@ class View
 
             return $cachedHtml;
         }
+
+        $cachedHtml = $this->htmlCache->get($filename);
 
         $ext = self::getEngineFromFileExtension($this->theme_path . $filename);
 

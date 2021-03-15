@@ -38,7 +38,8 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
     {
         $item = $this->pool->getItem($key . $this->ext);
 
-        return $item->isHit() ? $item->get() : $default;
+//        return $item->isHit() ? $item->get() : $default; // TODO
+        return $item->get() ?: $default;
     }
 
     /**

@@ -12,10 +12,6 @@ class TemplatesCache implements CacheItemPoolInterface
 {
     protected $cache_dir = '';
 
-    public function __construct()
-    {
-    }
-
     public function setCacheDir(string $path)
     {
         $this->cache_dir = $path;
