@@ -3,7 +3,7 @@
         "root": ".",
         "themes": "themes",
         "public": "public",
-        "cache": "{public}/cache",
+        "cache": "{public}/{themes}",
         "app": "app"
     },
     "theme": "unfold",

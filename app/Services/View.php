@@ -125,6 +125,8 @@ class View
             $twigOptions
         );
 
+        $twig->addExtension(new ProjectTwigExtension());
+
         $html = $twig->render("$filename.$ext", $vars);
 
         return $html;

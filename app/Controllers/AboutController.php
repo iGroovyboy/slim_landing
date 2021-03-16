@@ -4,12 +4,9 @@
 namespace App\Controllers;
 
 
-use App\Models\DB\Option;
-use App\Services\Config;
+use App\Models\Option;
 use App\Models\Node;
-use App\Services\DB\DB;
-use App\Services\View;
-use Psr\Container\ContainerInterface;
+
 
 class AboutController extends BaseController
 {
