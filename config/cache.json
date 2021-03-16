@@ -3,6 +3,10 @@
     "expiresAfter": 604800,
     "html_extension": "html",
 
+    "exclude": [
+
+    ],
+
     "twig": {
         "caching_enabled": false,
         "cache_dir": "twig"

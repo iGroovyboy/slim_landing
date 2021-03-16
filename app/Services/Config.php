@@ -63,7 +63,8 @@ class Config
 
     public static function has($propertyPath)
     {
-        return self::$propertyAccessor->getValue(self::$config, $propertyPath);
+        $path = self::convertPathToArrayNotation($propertyPath);
+        return self::$propertyAccessor->getValue(self::$config, $path);
     }
 
     protected static function getConfigPath()

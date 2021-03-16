@@ -11,10 +11,18 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
 {
     protected TemplatesCache $pool;
     protected string $ext = '.html';
+    protected $cache_fallback_dir = '';
 
     public function __construct(TemplatesCache $pool)
     {
         $this->pool = $pool;
+    }
+
+    public function setCacheFallbackDir(string $path)
+    {
+        $this->cache_fallback_dir = $path;
+
+        return $this;
     }
 
     public function setCacheDir(string $path)
@@ -29,6 +37,28 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
         $this->ext = '.' . $ext;
 
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function has($key)
+    {
+        $hasItem = $this->pool->hasItem($key . $this->ext);
+
+        // if key not found in cacheDir - look in fallback dir
+        if ( ! $hasItem) {
+            $originalCacheDir = $this->pool->getCacheDir();
+
+            $this->setCacheDir($this->cache_fallback_dir);
+
+            if ($this->pool->hasItem($key . $this->ext)) {
+                $this->setCacheDir($originalCacheDir);
+                return true;
+            }
+        }
+
+        return $hasItem;
     }
 
     /**
@@ -95,11 +125,4 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
         $this->pool->deleteItems($keys);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function has($key)
-    {
-        return $this->pool->hasItem($key . $this->ext);
-    }
 }

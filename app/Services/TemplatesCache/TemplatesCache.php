@@ -17,6 +17,11 @@ class TemplatesCache implements CacheItemPoolInterface
         $this->cache_dir = $path;
     }
 
+    public function getCacheDir()
+    {
+        return $this->cache_dir;
+    }
+
     public function getItem($key)
     {
         $cacheItem = new TemplateCacheItem($key);
