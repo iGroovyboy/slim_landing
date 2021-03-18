@@ -40,6 +40,7 @@ class View
     {
         if (
             Config::get('cache/enabled')
+            && ! in_array($filename, Config::get('cache/exclude'))
             && $this->htmlCache->has($filename)
             && ! empty($cachedHtml = $this->htmlCache->get($filename))
         ) {
@@ -66,7 +67,7 @@ class View
             $html = self::renderPHP("$this->theme_path$filename.$ext", $vars);
         }
 
-        if (Config::get('cache/enabled')) {
+        if (Config::get('cache/enabled') && ! in_array($filename, Config::get('cache/exclude'))) {
             $this->htmlCache->set($filename, $html, Config::get('cache/expiresAfter'));
         }
 
@@ -127,6 +128,7 @@ class View
 
     /** TODO move this to theme.install module
      * Creates symlink from root/themes/.. to root/public/themes/..
+     *
      * @param string $themePath
      * @param string $theme
      */

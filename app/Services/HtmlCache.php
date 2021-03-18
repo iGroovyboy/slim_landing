@@ -54,6 +54,7 @@ class HtmlCache implements \Psr\SimpleCache\CacheInterface
 
             if ($this->pool->hasItem($key . $this->ext)) {
                 $this->setCacheDir($originalCacheDir);
+
                 return true;
             }
         }

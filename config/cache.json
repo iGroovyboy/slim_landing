@@ -1,10 +1,11 @@
 {
-    "enabled": true,
+    "enabled": false,
     "expiresAfter": 604800,
     "html_extension": "html",
 
     "exclude": [
-
+        "install",
+        "admin"
     ],
 
     "twig": {
