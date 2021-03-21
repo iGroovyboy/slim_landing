@@ -4,6 +4,7 @@
         "themes": "themes",
         "public": "public",
         "cache": "{public}/{themes}",
+        "db": "data",
         "app": "app"
     },
     "theme": "unfold",

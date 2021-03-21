@@ -7,7 +7,8 @@
         "ext-json": "*",
         "symfony/property-access": "^5.2",
         "psr/cache": "^1.0",
-        "psr/simple-cache": "^1.0"
+        "psr/simple-cache": "^1.0",
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {"App\\": "app/"}

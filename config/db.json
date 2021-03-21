@@ -1,0 +1,7 @@
+{
+    "driver": "sqlite",
+    "host": "localhost",
+    "dbname": "slimland",
+    "user": "root",
+    "pass": "123"
+}
