@@ -10,12 +10,13 @@ class HomeController extends BaseController
 {
     public function default(): string
     {
-//        try {
-//            Config::has('db/driver');
-//        } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
-//            return (new InstallController($this->container, $this->view))->default();
-//        }
+        try {
+            Config::has('db/driver');
+        } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
+            return (new InstallController($this->container, $this->view))
+                ->render($this->request->getParsedBody());
+        }
 
-        return $this->view->render('home', ['http'=>'sdfsdfsd;fm;sdlf']);
+        return $this->view->render('home', ['http' => 'sdfsdfsd;fm;sdlf']);
     }
 }

@@ -11,6 +11,7 @@ require __DIR__ . '/../app/boot.php' ;
 session_start();
 
 $app->get('/', \App\Controllers\HomeController::class);
+$app->post('/', \App\Controllers\HomeController::class);
 
 $app->get('/help', \App\Controllers\HelpController::class);
 

@@ -6,6 +6,50 @@
     <link rel="stylesheet" href="../install/assets/css/style.css">
 </head>
 <body>
-install !!!
+<h1>SlimLand Installation</h1>
+<hr>
+<form action="/" method="post">
+    <h2>Site Language</h2>
+    <select name="language">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+    </select>
+
+    <h2>Admin credentials</h2>
+    <label for="">Email</label>
+    <input type="email" name="email" required>
+
+    <label for="">Password</label>
+    <input type="password" name="password" autocomplete="off" required>
+
+    <h2>Database credentials</h2>
+    <p>You can get this details from your hosting provider.</p>
+    <select name="db_driver">
+        <option value="">MySql</option>
+        <option value="">Postgres</option>
+        <option value="">Sqlite</option>
+    </select>
+
+    <p>Choose Sqlite if you don't know your db credentials.</p>
+
+    <label for="">DB name</label>
+    <input type="text" name="db_name" placeholder="slimland">
+
+    <label for="">DB user</label>
+    <input type="text" name="db_user">
+
+    <label for="">DB password</label>
+    <input type="text" name="db_pass">
+
+    <label for="">DB host</label>
+    <input type="text" name="db_host" placeholder="localhost">
+
+    <label for="">DB port</label>
+    <input type="text" name="db_port">
+
+    <input type="submit">
+</form>
+
+
 </body>
 </html>
