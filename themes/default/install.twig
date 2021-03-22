@@ -2,54 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Install s</title>
-    <link rel="stylesheet" href="../install/assets/css/style.css">
+    <title>Installation</title>
+    <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
 </head>
-<body>
-<h1>SlimLand Installation</h1>
-<hr>
-<form action="/" method="post">
-    <h2>Site Language</h2>
-    <select name="language">
-        <option value="en">English</option>
-        <option value="ru">Русский</option>
-    </select>
+<body class="container lg:mx-auto bg-light">
 
-    <h2>Admin credentials</h2>
-    <label for="">Email</label>
-    <input type="email" name="email" required>
+<main class="">
+    <h1>Installation</h1>
+    <hr>
+    <form action="/" method="post">
+        <h2>Language</h2>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+                <select class="form-select" name="language">
+                    <option value="en">English</option>
+                    <option value="ru">Русский</option>
+                </select>
+            </div>
+        </div>
 
-    <label for="">Password</label>
-    <input type="password" name="password" autocomplete="off" required>
+        <h2>Database configuration</h2>
+        <div class="row">
+            <label>You can get this details from your hosting provider. Select Sqlite if you don't know your db settings; this will use file-based database.</label>
+            <div class="col-md-6 mb-3">
+                <select class="form-select col-md-6 " name="db_driver">
+                    <option value="mysql">MySql</option>
+                    <option value="postgres">Postgres</option>
+                    <option value="sqlite">Sqlite</option>
+                </select>
+            </div>
+        </div>
 
-    <h2>Database credentials</h2>
-    <p>You can get this details from your hosting provider.</p>
-    <select name="db_driver">
-        <option value="">MySql</option>
-        <option value="">Postgres</option>
-        <option value="">Sqlite</option>
-    </select>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="">DB name</label>
+                <input class="form-control" type="text" name="db_name" placeholder="slimland">
+            </div>
+        </div>
 
-    <p>Choose Sqlite if you don't know your db credentials.</p>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="">DB user</label>
+                <input class="form-control" type="text" name="db_user">
+            </div>
 
-    <label for="">DB name</label>
-    <input type="text" name="db_name" placeholder="slimland">
+            <div class="col-md-6 mb-3">
+                <label for="">DB password</label>
+                <input class="form-control" type="text" name="db_pass">
+            </div>
+        </div>
 
-    <label for="">DB user</label>
-    <input type="text" name="db_user">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="">DB host</label>
+                <input class="form-control" type="text" name="db_host" placeholder="localhost">
+            </div>
 
-    <label for="">DB password</label>
-    <input type="text" name="db_pass">
+            <div class="col-md-6 mb-3">
+                <label for="">DB port</label>
+                <input class="form-control" type="text" name="db_port">
+            </div>
+        </div>
 
-    <label for="">DB host</label>
-    <input type="text" name="db_host" placeholder="localhost">
+        <button class="btn btn-primary mb-3" type="button">Check connection</button>
 
-    <label for="">DB port</label>
-    <input type="text" name="db_port">
+        <h2>Admin credentials</h2>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="">Email</label>
+                <input class="form-control" type="email" name="email" required>
+            </div>
 
-    <input type="submit">
-</form>
+            <div class="col-md-6 mb-3">
+                <label for="">Password</label>
+                <input class="form-control" type="password" name="password" autocomplete="off" required>
+            </div>
+        </div>
 
+        <button class="btn btn-primary mb-3" type="submit">Submit</button>
+    </form>
+</main>
 
 </body>
 </html>
