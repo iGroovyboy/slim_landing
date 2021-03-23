@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Installation</title>
     <!-- CSS only -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+          crossorigin="anonymous">
 
 </head>
 <body class="container lg:mx-auto bg-light">
@@ -13,7 +13,7 @@
 <main class="">
     <h1>Installation</h1>
     <hr>
-    <form action="/" method="post">
+    <form action="/api/db/check" method="post" name="install">
         <h2>Language</h2>
         <div class="row mb-3">
             <div class="col-md-6 mb-3">
@@ -30,7 +30,7 @@
             <div class="col-md-6 mb-3">
                 <select class="form-select col-md-6 " name="db_driver">
                     <option value="mysql">MySql</option>
-                    <option value="postgres">Postgres</option>
+                    <option value="pgsql">PostgreSQL</option>
                     <option value="sqlite">Sqlite</option>
                 </select>
             </div>
@@ -38,19 +38,19 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="">DB name</label>
+                <label for="">DB name*</label>
                 <input class="form-control" type="text" name="db_name" placeholder="slimland">
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="">DB user</label>
+                <label for="">DB user*</label>
                 <input class="form-control" type="text" name="db_user">
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="">DB password</label>
+                <label for="">DB password*</label>
                 <input class="form-control" type="text" name="db_pass">
             </div>
         </div>
@@ -63,28 +63,83 @@
 
             <div class="col-md-6 mb-3">
                 <label for="">DB port</label>
-                <input class="form-control" type="text" name="db_port">
+                <input class="form-control" type="text" name="db_port" placeholder="3306">
             </div>
         </div>
 
-        <button class="btn btn-primary mb-3" type="button">Check connection</button>
+        <button id="checkDb" class="btn btn-primary mb-3" type="button">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Check connection
+        </button>
 
-        <h2>Admin credentials</h2>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="">Email</label>
-                <input class="form-control" type="email" name="email" required>
-            </div>
+        <div class="visually-hidden">
+            <h2>Admin credentials</h2>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="">Email</label>
+                    <input class="form-control" type="email" name="email" >
+                </div>
 
-            <div class="col-md-6 mb-3">
-                <label for="">Password</label>
-                <input class="form-control" type="password" name="password" autocomplete="off" required>
+                <div class="col-md-6 mb-3">
+                    <label for="">Password</label>
+                    <input class="form-control" type="password" name="password" autocomplete="off" >
+                </div>
             </div>
         </div>
 
-        <button class="btn btn-primary mb-3" type="submit">Submit</button>
+        <button id="submit" class="btn btn-primary mb-3" type="submit">Submit</button>
     </form>
 </main>
 
+<script>
+    const btnCheckDB = document.getElementById('checkDb');
+    const btnSubmit = document.getElementById('submit');
+    const selectDriver = document.querySelector('select[name="db_driver"]');
+    const dbPort = document.querySelector('input[name="db_port"]');
+
+    btnCheckDB.addEventListener('click', async function (e) {
+        const url = '/api/db/check';
+        let dbData = {};
+
+        const formData = new FormData(document.forms.install)
+        for (var key of formData.keys()) {
+           dbData[key] = formData.get(key);
+        }
+
+        let response = await fetch('/api/db/check', {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            // body: JSON.stringify(dbData)
+            data: dbData,
+            body: dbData
+        });
+
+        let result = await response.json();
+        console.log('Успех:', JSON.stringify(result), result);
+    })
+
+    btnSubmit.addEventListener('click', function (e) {
+        // e.preventDefault();
+        console.log('submit', e.target);
+    })
+
+    selectDriver.addEventListener('change', function (e) {
+        const option = e.target.selectedOptions[0].value;
+        switch (option) {
+            case 'mysql':
+                port = 3306;
+                break;
+            case 'pgsql':
+                port = 5432;
+                break;
+            default:
+                port = '';
+        }
+
+        dbPort.setAttribute('placeholder', port);
+    })
+</script>
 </body>
 </html>

@@ -10,8 +10,21 @@ require __DIR__ . '/../app/boot.php' ;
 
 session_start();
 
-$app->get('/', \App\Controllers\HomeController::class);
-$app->post('/', \App\Controllers\HomeController::class);
+$app->addBodyParsingMiddleware();
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, true, true);
+
+
+$app->map(['GET', 'POST'],'/', \App\Controllers\HomeController::class);
+//$app->post('/', \App\Controllers\HomeController::class);
+
+try {
+    Config::has('db/driver');
+} catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
+    $app->post('/api/db/check', \App\Controllers\Api\DbController::class . ':checkConnection');
+}
+
+
 
 $app->get('/help', \App\Controllers\HelpController::class);
 
