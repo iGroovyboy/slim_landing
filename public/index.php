@@ -11,9 +11,6 @@ require __DIR__ . '/../app/boot.php' ;
 session_start();
 
 $app->addBodyParsingMiddleware();
-$app->addRoutingMiddleware();
-$app->addErrorMiddleware(true, true, true);
-
 
 $app->map(['GET', 'POST'],'/', \App\Controllers\HomeController::class);
 //$app->post('/', \App\Controllers\HomeController::class);

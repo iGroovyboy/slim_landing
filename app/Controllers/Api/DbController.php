@@ -22,13 +22,6 @@ class DbController
         $this->args     = $args;
 
         $ss = $this->request->getParsedBody();
-        $headers = $request->getHeaders();
-
-        $paramsX = (array)$request->getParsedBody();
-
-        $json = $this->request->getBody();
-        $data = json_decode($json, true); // parse the JSON into an assoc. array
-
 
         $this->response->getBody()->write(json_encode([345, '444']));
 

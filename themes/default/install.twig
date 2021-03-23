@@ -108,17 +108,28 @@
 
         let response = await fetch('/api/db/check', {
             method: 'POST',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
-            // body: JSON.stringify(dbData)
-            data: dbData,
-            body: dbData
+            body: JSON.stringify(dbData)
         });
 
         let result = await response.json();
         console.log('Успех:', JSON.stringify(result), result);
+
+        // fetch(url, {
+        //     method: 'post',
+        //     headers: {
+        //         'Accept': 'application/json, text/plain, */*',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(dbData)
+        // })
+        // .then(res => res.json())
+        // .then(res => console.log(res));
     })
+
+
 
     btnSubmit.addEventListener('click', function (e) {
         // e.preventDefault();
