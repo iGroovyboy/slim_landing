@@ -25,7 +25,6 @@ Config::set( 'app/paths/root', ROOT_DIR );
 
 try {
     \App\Services\DB\DB::setDriver(Config::get('db/driver'));
-//    \App\Services\DB\DB::setDriver('fff');
     \App\Services\DB\DB::start(Config::get('db'));
 } catch (Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
     //dump($e);

@@ -4,7 +4,8 @@
         "themes": "themes",
         "public": "public",
         "cache": "{public}/{themes}",
-        "db": "data",
+        "db": "database",
+        "dbfilename": "sqlite.db",
         "app": "app"
     },
     "theme": "unfold",

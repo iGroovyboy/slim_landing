@@ -14,8 +14,8 @@
     <h1>Installation</h1>
     <hr>
     <form action="/api/db/check" method="post" name="install">
-        <h2>Language</h2>
-        <div class="row mb-3">
+        <h2 class="db-driver">Language</h2>
+        <div class="row mb-3 db-driver">
             <div class="col-md-6 mb-3">
                 <select class="form-select" name="language">
                     <option value="en">English</option>
@@ -24,81 +24,103 @@
             </div>
         </div>
 
-        <h2>Database configuration</h2>
-        <div class="row">
-            <label>You can get this details from your hosting provider. Select Sqlite if you don't know your db settings; this will use file-based database.</label>
+        <h2 class="db-driver">Database configuration</h2>
+        <div class="row db-driver">
+            <label>You can get this details from your hosting provider. Go with Sqlite if you're not sure.</label>
             <div class="col-md-6 mb-3">
-                <select class="form-select col-md-6 " name="db_driver">
+                <select class="form-select col-md-6 " name="driver">
+                    <option value="sqlite">Sqlite</option>
                     <option value="mysql">MySql</option>
                     <option value="pgsql">PostgreSQL</option>
-                    <option value="sqlite">Sqlite</option>
                 </select>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row db-name">
             <div class="col-md-6 mb-3">
                 <label for="">DB name*</label>
-                <input class="form-control" type="text" name="db_name" placeholder="slimland">
+                <input class="form-control" type="text" name="dbname" placeholder="slimland">
             </div>
         </div>
 
-        <div class="row">
+        <div class="row db-credentials">
             <div class="col-md-6 mb-3">
                 <label for="">DB user*</label>
-                <input class="form-control" type="text" name="db_user">
+                <input class="form-control" type="text" name="user">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label for="">DB password*</label>
-                <input class="form-control" type="text" name="db_pass">
+                <input class="form-control" type="text" name="pass">
             </div>
         </div>
 
-        <div class="row">
+        <div class="row db-details">
             <div class="col-md-6 mb-3">
                 <label for="">DB host</label>
-                <input class="form-control" type="text" name="db_host" placeholder="localhost">
+                <input class="form-control" type="text" name="host" placeholder="localhost">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label for="">DB port</label>
-                <input class="form-control" type="text" name="db_port" placeholder="3306">
+                <input class="form-control" type="text" name="port" placeholder="3306">
             </div>
         </div>
 
+        <div class="row db-status mx-0"></div>
+
         <button id="checkDb" class="btn btn-primary mb-3" type="button">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span class="spinner spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"></span>
             Check connection
         </button>
 
-        <div class="visually-hidden">
+        <div class="admin-credentials ">
             <h2>Admin credentials</h2>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="">Email</label>
-                    <input class="form-control" type="email" name="email" >
+                    <input class="form-control" type="email" name="admin_email" >
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="">Password</label>
-                    <input class="form-control" type="password" name="password" autocomplete="off" >
+                    <input class="form-control" type="password" name="admin_password" autocomplete="off" >
                 </div>
             </div>
         </div>
 
-        <button id="submit" class="btn btn-primary mb-3" type="submit">Submit</button>
+        <div class="row admin-status mx-0"></div>
+
+        <button id="submit" class="btn btn-primary mb-3 visually-hidden" type="submit">Submit</button>
     </form>
 </main>
 
 <script>
-    const btnCheckDB = document.getElementById('checkDb');
-    const btnSubmit = document.getElementById('submit');
-    const selectDriver = document.querySelector('select[name="db_driver"]');
-    const dbPort = document.querySelector('input[name="db_port"]');
+    let hasAdminEmail = false,
+        hasAdminPass = false;
+    const hidden = "visually-hidden";
+
+    const btnCheckDB    = document.getElementById('checkDb'),
+          checkDBLoader = document.querySelector('span.spinner'),
+          checkDBstatus = document.querySelector('.db-status'),
+          selectDriver  = document.querySelector('select[name="driver"]'),
+          dbPort        = document.querySelector('input[name="port"]'),
+
+          dbDriver      = document.querySelector('div.db-driver'),
+          dbName        = document.querySelector('div.db-name'),
+          dbCredentials = document.querySelector('div.db-credentials'),
+          dbDetails     = document.querySelector('div.db-details'),
+
+          adminForm     = document.querySelector('div.admin-credentials'),
+          adminEmail    = document.querySelector('input[name="admin_email"]'),
+          adminPass     = document.querySelector('input[name="admin_password"]'),
+          adminStatus   = document.querySelector('div.admin-status'),
+
+          btnSubmit     = document.getElementById('submit');
 
     btnCheckDB.addEventListener('click', async function (e) {
-        const url = '/api/db/check';
+        checkDBLoader.classList.remove(hidden);
+
         let dbData = {};
 
         const formData = new FormData(document.forms.install)
@@ -106,7 +128,7 @@
            dbData[key] = formData.get(key);
         }
 
-        let response = await fetch('/api/db/check', {
+        let response = await fetch('/api/install/db_check', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
@@ -115,42 +137,119 @@
         });
 
         let result = await response.json();
-        console.log('Успех:', JSON.stringify(result), result);
 
-        // fetch(url, {
-        //     method: 'post',
-        //     headers: {
-        //         'Accept': 'application/json, text/plain, */*',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(dbData)
-        // })
-        // .then(res => res.json())
-        // .then(res => console.log(res));
-    })
+        checkDBLoader.classList.add(hidden);
+        status = result.error ? 0 : 1;
+        notice(result.message, checkDBstatus, status);
+        if(status){
+            dbDriver.classList.add(hidden);
+            dbName.classList.add(hidden);
+            dbCredentials.classList.add(hidden);
+            dbDetails.classList.add(hidden);
+            btnCheckDB.classList.add(hidden);
 
-
+            adminForm.classList.remove(hidden);
+            btnSubmit.classList.remove(hidden);
+        }
+    });
 
     btnSubmit.addEventListener('click', function (e) {
-        // e.preventDefault();
-        console.log('submit', e.target);
-    })
+        e.preventDefault();
+        console.log('---------------submit');
+        const data = {
+            'admin_email': adminEmail.value,
+            'admin_password': adminPass.value,
+        };
+
+        fetch('/api/install/add_admin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(result => result.json())
+        .then(result => {
+            console.log(result);
+        });
+    });
+
+    adminEmail.addEventListener('keyup', function (e) {
+        hasAdminEmail = !e.target.validity.typeMismatch;
+
+        if (hasAdminEmail && hasAdminPass){
+            btnSubmit.classList.remove(hidden);
+        }
+    });
+
+    adminPass.addEventListener('keyup', function (e) {
+        hasAdminPass = e.target.value.length >= 3;
+
+        if (hasAdminEmail && hasAdminPass){
+            btnSubmit.classList.remove(hidden);
+        }
+    });
 
     selectDriver.addEventListener('change', function (e) {
         const option = e.target.selectedOptions[0].value;
         switch (option) {
             case 'mysql':
                 port = 3306;
+                dbName.classList.remove(hidden);
+                dbCredentials.classList.remove(hidden);
+                dbDetails.classList.remove(hidden);
                 break;
             case 'pgsql':
                 port = 5432;
+                dbName.classList.remove(hidden);
+                dbCredentials.classList.remove(hidden);
+                dbDetails.classList.remove(hidden);
                 break;
-            default:
+            case 'sqlite':
                 port = '';
+                dbName.classList.add(hidden);
+                dbCredentials.classList.add(hidden);
+                dbDetails.classList.add(hidden);
         }
 
         dbPort.setAttribute('placeholder', port);
-    })
+    });
+
+    Window.onLoad = (() => {
+        driver = selectDriver.selectedOptions[0].value;
+        port   = getDbPort(driver);
+
+        if('sqlite' === driver){
+            dbName.classList.add(hidden);
+            dbCredentials.classList.add(hidden);
+            dbDetails.classList.add(hidden);
+        } else {
+            dbName.classList.remove(hidden);
+            dbCredentials.classList.remove(hidden);
+            dbDetails.classList.remove(hidden);
+        }
+    })();
+
+    function getDbPort(driver) {
+        if('mysql' === driver) {
+            return 3306;
+        } else if('pgsql' === driver){
+            return 5432;
+        } else {
+            return '';
+        }
+    }
+
+    function notice(message, parent, status = 0) {
+        const statuses = {
+            0: 'danger',
+            1: 'success'
+        }
+        html = `<div class="alert alert-${statuses[status]} alert-dismissible fade show" role="alert">${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+        `;
+        parent.innerHTML = html;
+    }
 </script>
 </body>
 </html>

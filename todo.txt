@@ -1,0 +1,14 @@
+set sqlite db file to chmod 700 https://chmodcommand.com/chmod-700/
+session
+    to db?
+    security
+        https://habr.com/ru/post/437972/
+csrf
+    https://symfony.com/doc/current/security/csrf.html#generating-and-checking-csrf-tokens-manually
+    https://stackoverflow.com/questions/6287903/how-to-properly-add-cross-site-request-forgery-csrf-token-using-php
+    https://profiphp.ru/useful/csrf_protection_php.html
+encode password
+    https://symfony.com/doc/current/security.html#c-encoding-passwords
+
+js translate
+    https://github.com/andreasremdt/simple-translator

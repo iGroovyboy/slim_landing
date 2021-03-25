@@ -10,20 +10,32 @@ use PDOStatement;
 
 class DB
 {
+    public const DRIVER_SQLITE = 'sqlite';
+    public const DRIVER_MYSQL = 'mysql';
+    public const DRIVER_PGSQL = 'pgsql';
+
     protected static $query = '';
     protected static $args = [];
+    /**
+     * @var DBConfig
+     */
+    protected static DBConfig $config;
 
     protected $st = '';
 
     protected static $driver = '';
+    protected static string $path = '';
 
     protected static PDO $pdo;
 
     public function __construct($query, $args)
     {
-        $this->query = $query;
-        $this->args  = $args;
+        self::$query = $query;
+        self::$args  = $args;
 
+//        if (!self::isConnected()) {
+//
+//        }
         $pdoStatement = self::$pdo->prepare($query);
         /* @var $pdoStatement PDOStatement */
         foreach ($args as $k => $arg) {
@@ -36,27 +48,45 @@ class DB
     public static function setDriver($driver)
     {
         self::$driver = $driver;
+
+        if (DB::DRIVER_SQLITE === self::$driver) {
+            self::$path = Config::getPath('app/paths/db', Config::get('app/paths/dbfilename'));
+        }
     }
 
     public static function start($db)
     {
-        if ('sqlite' === $db['driver']) {
-            $path = Config::getPath('app/db', 'database.db');
-            $dsn  = "sqlite:host={$db['host']};charset=utf8";
-        } elseif ('mysql' === $db['driver']) {
-            $dsn = "mysql:host={$db['host']};dbname={$db['dbname']};charset=utf8";
-        } elseif ('pgsql' === $db['driver']) {
-            $dsn = "pgsql:host={$db['host']};dbname={$db['dbname']};charset=utf8";
-            //port=5432;
-        }
-
-        $options = [
+        $db['path']    = self::$path;
+        $db['options'] = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
-        self::$pdo = new PDO($dsn, $db['user'], $db['pass'], $options);
+        self::$config = new DBConfig($db);
+
+        return self::$pdo = new PDO(
+            self::$config->getDsn(),
+            self::$config->username,
+            self::$config->password,
+            self::$config->options
+        );
+    }
+
+    public static function isConnected()
+    {
+        return empty(self::$pdo); //self::$pdo instanceof PDO;
+    }
+
+    public static function setConfig()
+    {
+    }
+
+    public static function getConfig()
+    {
+        $config = (array) self::$config;
+
+        return $config;
     }
 
     protected static function driver_mysql()
@@ -118,5 +148,16 @@ class DB
         $caller    = $backtrace[2]['object'];
 
         return $caller::TABLE_NAME;
+    }
+
+    public static function getPort($driver)
+    {
+        $ports = [
+            self::DRIVER_MYSQL  => 3306,
+            self::DRIVER_PGSQL  => 5432,
+            self::DRIVER_SQLITE => '',
+        ];
+
+        return $ports[$driver];
     }
 }

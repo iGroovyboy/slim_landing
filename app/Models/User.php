@@ -7,7 +7,7 @@ use App\Services\DB\DB;
 
 class User extends Model
 {
-    public const TABLE_NAME = 'options';
+    public const TABLE_NAME = 'users';
 
     public int $id;
     public string $email;
@@ -30,5 +30,16 @@ class User extends Model
         }
 
         return null;
+    }
+
+    public static function add(string $email, string $hash, $role_id)
+    {
+        // add user to db
+        $q = DB::query("INSERT INTO {self::TABLE_NAME} (email, hash, role_id) VALUES (?, ?, ?)", [$email, $hash, $role_id])->exec();
+
+        // TODO notify by email
+        // ..
+
+        return $q;
     }
 }
