@@ -22,7 +22,7 @@ final class DBConfig
 
     public ?string $path;
 
-    public ?int $port;
+    public $port;
 
     public ?string $dbname;
 
@@ -42,7 +42,7 @@ final class DBConfig
      * @param string $driver
      * @param string $host
      * @param string $path
-     * @param null|int $port
+     * @param mixed $port
      * @param string $dbname
      * @param string $unix_socket
      * @param string $charset
@@ -56,21 +56,23 @@ final class DBConfig
         $this->path        = $db[self::DSN_PATH];
         $this->port        = $db[self::DSN_PORT] ?: DB::getPort($this->driver);
         $this->dbname      = $db[self::DSN_DBNAME];
-        $this->unix_socket = $db[self::DSN_UNIX_SOCKET];
-        $this->charset     = $db[self::DSN_CHARSET];
+        $this->unix_socket = $db[self::DSN_UNIX_SOCKET] ?? '';
+        $this->charset     = $db[self::DSN_CHARSET] ?? '';
 
         $this->username    = $db[self::DSN_USERNAME];
         $this->password    = $db[self::DSN_PASSWORD];
+
+        $this->options     = $db['options'];
     }
 
     public function getDsn()
     {
         $port = '';
-        if ( ! empty($p = $this->self::DSN_PORT)) {
+        if ( ! empty($p = self::DSN_PORT)) {
             $port = "port=$p;";
         }
 
-        if (DB::DRIVER_SQLITE === self::DSN_DRIVER) {
+        if (DB::DRIVER_SQLITE === $this->driver) {
             $dsn = "sqlite:$this->path";
         } elseif (DB::DRIVER_MYSQL === $this->driver) {
             $dsn = "mysql:host={$this->host};{$port}dbname={$this->dbname};charset=utf8";

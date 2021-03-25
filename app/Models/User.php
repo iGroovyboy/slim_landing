@@ -20,11 +20,13 @@ class User extends Model
         $this->if    = $data->id;
         $this->role  = $data->role;
         $this->hash  = $data->hash;
+        $this->tableName  = self::TABLE_NAME;
     }
 
     public static function getByEmail(string $email)
     {
-        $data = DB::query("SELECT * FROM {self::TABLE_NAME} WHERE email = ?", [$email])->first();
+        $table_name = self::TABLE_NAME;
+        $data = DB::query("SELECT * FROM {$table_name} WHERE email = ?", [$email])->first();
         if ($data) {
             return new self($data);
         }
@@ -34,12 +36,13 @@ class User extends Model
 
     public static function add(string $email, string $hash, $role_id)
     {
+        $table_name = self::TABLE_NAME;
         // add user to db
-        $q = DB::query("INSERT INTO {self::TABLE_NAME} (email, hash, role_id) VALUES (?, ?, ?)", [$email, $hash, $role_id])->exec();
+        $insert = DB::query("INSERT INTO {$table_name} (email, hash, role_id) VALUES (?, ?, ?)", [$email, $hash, $role_id])->exec();
 
         // TODO notify by email
         // ..
 
-        return $q;
+        return $insert;
     }
 }

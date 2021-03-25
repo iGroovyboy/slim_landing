@@ -46,12 +46,12 @@
         <div class="row db-credentials">
             <div class="col-md-6 mb-3">
                 <label for="">DB user*</label>
-                <input class="form-control" type="text" name="user">
+                <input class="form-control" type="text" name="username">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label for="">DB password*</label>
-                <input class="form-control" type="text" name="pass">
+                <input class="form-control" type="text" name="password">
             </div>
         </div>
 
@@ -236,7 +236,7 @@
         } else if('pgsql' === driver){
             return 5432;
         } else {
-            return '';
+            return null;
         }
     }
 

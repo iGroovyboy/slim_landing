@@ -102,7 +102,7 @@ class Config
             $filename         = "$key.json";
             $saved[$filename] = file_put_contents(
                 self::getConfigPath() . $filename,
-                json_encode(self::$config),
+                json_encode(self::$config[$key]),
                 LOCK_EX
             );
         }

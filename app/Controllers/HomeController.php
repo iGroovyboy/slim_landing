@@ -4,6 +4,7 @@
 namespace App\Controllers;
 
 
+use App\Models\User;
 use App\Services\Config;
 
 class HomeController extends BaseController
@@ -13,6 +14,11 @@ class HomeController extends BaseController
         try {
             Config::has('db/driver');
         } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
+            return (new InstallController($this->container, $this->view))
+                ->render($this->request->getParsedBody());
+        }
+
+        if ( ! User::hasAny()) {
             return (new InstallController($this->container, $this->view))
                 ->render($this->request->getParsedBody());
         }

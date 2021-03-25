@@ -33,13 +33,13 @@ class DB
         self::$query = $query;
         self::$args  = $args;
 
-//        if (!self::isConnected()) {
-//
-//        }
+        if (!self::isConnected()) {
+            throw new \Exception('Db is not connected');
+        }
         $pdoStatement = self::$pdo->prepare($query);
-        /* @var $pdoStatement PDOStatement */
+        /* @var PDOStatement $pdoStatement*/
         foreach ($args as $k => $arg) {
-            $pdoStatement->bindValue($k, $arg, self::getType($arg));
+            $pdoStatement->bindValue($k + 1, $arg, self::getType($arg));
         }
 
         $this->st = $pdoStatement;
@@ -65,7 +65,7 @@ class DB
 
         self::$config = new DBConfig($db);
 
-        return self::$pdo = new PDO(
+        self::$pdo = new PDO(
             self::$config->getDsn(),
             self::$config->username,
             self::$config->password,
@@ -75,7 +75,7 @@ class DB
 
     public static function isConnected()
     {
-        return empty(self::$pdo); //self::$pdo instanceof PDO;
+        return ! empty(self::$pdo); //self::$pdo instanceof PDO;
     }
 
     public static function setConfig()
@@ -84,16 +84,14 @@ class DB
 
     public static function getConfig()
     {
-        $config = (array) self::$config;
-
-        return $config;
+        return (array) self::$config;
     }
 
     protected static function driver_mysql()
     {
     }
 
-    public static function query(string $query, $args): self
+    public static function query(string $query, $args = []): self
     {
         return new self($query, $args);
     }

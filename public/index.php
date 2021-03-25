@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Services\Config;
 use App\Services\DB\DB;
 use Slim\Routing\RouteCollectorProxy;
@@ -20,10 +21,9 @@ try {
     $app->post('/api/install/db_check', \App\Controllers\Api\DbController::class . ':setupDBConnection');
 }
 
-if ( ! DB::isConnected()) {
+if ( ! DB::isConnected() || ! User::hasAny()) {
     $app->post('/api/install/add_admin', \App\Controllers\Api\DbController::class . ':setupAdminCredentials');
 }
-
 
 $app->get('/help', \App\Controllers\HelpController::class);
 

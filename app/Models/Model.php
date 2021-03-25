@@ -13,9 +13,17 @@ class Model
     protected static $parentType;
     protected static $parentId;
 
+    public static function hasAny()
+    {
+        $result = DB::query("SELECT * FROM " . static::TABLE_NAME . " LIMIT 1")->first();
+
+        return ! empty($result);
+    }
+
     /**
      * Sets base working table for Model class ONLY.
      * That's why it is **private** and why it is **self** (no late static binded need for uninhertited meth)
+     *
      * @param string $tableName
      *
      * @return static

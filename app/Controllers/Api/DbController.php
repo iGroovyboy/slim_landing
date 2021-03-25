@@ -38,7 +38,7 @@ class DbController
         }
 
         Config::set('db/driver', $input['driver']);
-//        Config::save();
+        Config::save();
 
         try {
             DB::start($input);
@@ -46,9 +46,9 @@ class DbController
             return $this->respond('error', $e->getMessage());
         }
 
-        if (DB::isConnected()){
+        if (DB::isConnected()) {
             Config::set('db', DB::getConfig());
-//            Config::save();
+            Config::save();
         }
 
         return $this->respond('success', 'Database connection has been successfully established!');
@@ -61,12 +61,11 @@ class DbController
         $this->args     = $args;
 
         if ( ! DB::isConnected()) {
-            return $this->respond('error', 'Admin credentials update failed! Database connection does not exist!');
+            return $this->respond('error', 'Admin credentials update failed! Database connection config does not exist!');
         }
-        $isConnected = DB::isConnected();
 
         $input = $this->request->getParsedBody();
-        if (empty($input['admin_email']) || $input['admin_password']) {
+        if (empty($input['admin_email']) || empty($input['admin_password'])) {
             return $this->respond('error', 'Bad credentials!');
         }
 
@@ -74,7 +73,13 @@ class DbController
             return $this->respond('error', 'User with specified email already exists!');
         }
 
-        $user = User::add($input['admin_email'], Hash::make($input['admin_password']), 777);
+        try {
+            $user = User::add($input['admin_email'], Hash::make($input['admin_password']), 777);
+        } catch (\PDOException $e) {
+            return $this->respond('error', $e->getMessage());
+        }
+
+
         if ( ! $user) {
             return $this->respond('error', 'Something went wrong! Admin credentials were not updated!');
         }
