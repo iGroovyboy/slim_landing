@@ -37,6 +37,7 @@ class DbController
             self::maybeCreateSqliteDB();
         }
 
+        DB::setDriver($input['driver']);
         Config::set('db/driver', $input['driver']);
         Config::save();
 
@@ -49,6 +50,8 @@ class DbController
         if (DB::isConnected()) {
             Config::set('db', DB::getConfig());
             Config::save();
+
+            DB::migrate(Config::getPath('app/paths/migrations'));
         }
 
         return $this->respond('success', 'Database connection has been successfully established!');

@@ -1,0 +1,12 @@
+create table users
+(
+    id      integer
+        constraint users_pk
+            primary key autoincrement,
+    email   text not null,
+    hash    text not null,
+    role_id integer default null
+);
+
+create unique index users_email_uindex
+    on users (email);

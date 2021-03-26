@@ -33,11 +33,11 @@ class DB
         self::$query = $query;
         self::$args  = $args;
 
-        if (!self::isConnected()) {
+        if ( ! self::isConnected()) {
             throw new \Exception('Db is not connected');
         }
         $pdoStatement = self::$pdo->prepare($query);
-        /* @var PDOStatement $pdoStatement*/
+        /* @var PDOStatement $pdoStatement */
         foreach ($args as $k => $arg) {
             $pdoStatement->bindValue($k + 1, $arg, self::getType($arg));
         }
@@ -84,11 +84,39 @@ class DB
 
     public static function getConfig()
     {
-        return (array) self::$config;
+        return (array)self::$config;
+    }
+
+    public static function migrate($dir)
+    {
+        $ext = self::$driver === self::DRIVER_SQLITE ? 'sqlite' : 'sql';
+
+        $files = array_filter(
+            array_diff(scandir($dir), array('..', '.', 'readme.md')),
+            function ($file) use ($ext) {
+                return pathinfo($file, PATHINFO_EXTENSION) === $ext;
+            }
+        );
+
+        $migrated = [];
+        foreach ($files as $file) {
+            $migration = file_get_contents($dir . $file);
+
+            if ( ! $migration || empty($migration)) {
+                continue;
+            }
+
+            $migrated[] = DB::query($migration)->exec();
+            // TODO add logging
+            // ..
+        }
+
+        return $migrated;
     }
 
     protected static function driver_mysql()
     {
+
     }
 
     public static function query(string $query, $args = []): self
