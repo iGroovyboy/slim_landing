@@ -25,11 +25,11 @@ $app->map(['GET', 'POST'], '/login', \App\Controllers\AuthController::class . ':
 try {
     Config::has('db/driver');
 } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
-    $app->post('/api/install/db_check', \App\Controllers\Api\DbController::class . ':setupDBConnection');
+    $app->post('/api/install_db', \App\Controllers\Api\DbController::class . ':setupDBConnection')->setName('install_db');
 }
 
 if ( ! DB::isConnected() || ! User::hasAny()) {
-    $app->post('/api/install/add_admin', \App\Controllers\Api\DbController::class . ':setupAdminCredentials');
+    $app->post('/api/install_admin', \App\Controllers\Api\DbController::class . ':setupAdminCredentials')->setName('install_admin');
 }
 
 
