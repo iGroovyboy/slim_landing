@@ -12,6 +12,22 @@ class View
     public const TWIG_TEMPLATE = 'twig';
 
     private $theme;
+
+    /**
+     * @return mixed|string
+     */
+    public function getTheme(): string
+    {
+        return $this->theme;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThemePath(): string
+    {
+        return $this->theme_path;
+    }
     private $theme_path;
 
     public function __construct(Config $config, HtmlCache $htmlCache)
@@ -44,7 +60,7 @@ class View
             && $this->htmlCache->has($filename)
             && ! empty($cachedHtml = $this->htmlCache->get($filename))
         ) {
-            $this->createAssetsSymlink(); // TODO move this to theme.install module
+            Install::createAssetsSymlink(); // TODO move this to theme.install module
 
             return $cachedHtml;
         }
@@ -54,7 +70,7 @@ class View
         $ext = self::getEngineFromFileExtension($this->theme_path . $filename);
 
         if (Config::get('app/theme_dev')) {
-            $this->createAssetsSymlink();
+            Install::createAssetsSymlink($this);
         }
 
         if ( ! file_exists("$this->theme_path$filename.$ext")) {
@@ -126,44 +142,12 @@ class View
         return ob_get_clean();
     }
 
-    /** TODO move this to theme.install module
-     * Creates symlink from root/themes/.. to root/public/themes/..
-     *
-     * @param string $themePath
-     * @param string $theme
-     */
-    protected function createAssetsSymlink(): void
-    {
-        $originalDir    = $this->theme_path . Config::$assetsDir . DS;
-        $publicThemeDir = Config::getPath('app/paths/public')
-                          . Config::get('app/paths/themes')
-                          . DS . $this->theme;
-        $link           = $publicThemeDir . DS . Config::$assetsDir . DS;
-
-        if (is_link($link)) {
-            return;
-        }
-
-        $mkdir = mkdir($publicThemeDir, 0664); //0775?
-        if ( ! $mkdir) {
-            if ( ! file_exists($mkdir) || ! is_dir($mkdir)) {
-                // TODO log?
-            }
-        }
-
-        $symlink = symlink($originalDir, $link);
-
-        if ( ! $symlink) {
-            // TODO log?
-        }
-    }
-
     public function themeActivate(string $theme)
     {
         //
         // check all dirs +default exist
 
-        $this->createAssetsSymlink();
+        Install::createAssetsSymlink($this);
     }
 
     public static function themeDeactivate(string $theme = null)

@@ -40,7 +40,7 @@ class Auth
 
     public static function isLogged()
     {
-        return $_SESSION['isLoggedIn'] ?: false;
+        return $_SESSION['isLoggedIn'] ?? false;
     }
 
 }
