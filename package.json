@@ -1,0 +1,23 @@
+{
+  "name": "slimland",
+  "version": "1.0.0",
+  "description": "Landing page cms with block editing and themes.",
+  "main": "index.js",
+  "dependencies": {
+    "purgecss": "^4.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "purgecss_install": "purgecss --css ./vendor/twbs/bootstrap/dist/css/bootstrap.min.css --content ./themes/default/install.twig --output ./themes/default/assets/css/install_bootstrap.min.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iGroovyboy/slim_landing.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iGroovyboy/slim_landing/issues"
+  },
+  "homepage": "https://github.com/iGroovyboy/slim_landing#readme"
+}
