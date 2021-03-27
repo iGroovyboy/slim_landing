@@ -6,17 +6,10 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Services\DB\DB;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class InstallController extends BaseController
 {
     protected $data;
-//    public function default(): string
-//    {
-//        return $this->view->render('install');
-//    }
-
 
     public function render($data)
     {
