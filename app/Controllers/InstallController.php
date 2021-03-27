@@ -4,6 +4,8 @@
 namespace App\Controllers;
 
 
+use App\Models\User;
+use App\Services\DB\DB;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,7 +25,20 @@ class InstallController extends BaseController
             $this->install();
         }
 
-        return $this->view->render('install');
+        global $app;
+        $routeParser =  $app->getRouteCollector()->getRouteParser();
+        $loginUrl = $routeParser->urlFor('login');
+
+        $hasDb = DB::isConnected();
+        $hasUser = $hasDb ? User::hasAny() : false;
+
+        $vars = [
+            'hasDb' => $hasDb,
+            'hasUser' => $hasUser,
+            'loginUrl' => $loginUrl,
+        ];
+
+        return $this->view->render('install', $vars);
     }
 
     protected function install()

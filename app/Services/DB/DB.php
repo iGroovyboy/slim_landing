@@ -106,12 +106,16 @@ class DB
                 continue;
             }
 
-            $migrated[] = DB::query($migration)->exec();
+            try {
+                $migrated[] = DB::query($migration)->exec();
+            } catch (\PDOException $e) {
+                $e;
+            }
             // TODO add logging
             // ..
         }
 
-        return $migrated;
+         return $migrated;
     }
 
     protected static function driver_mysql()

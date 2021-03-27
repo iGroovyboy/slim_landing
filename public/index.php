@@ -12,7 +12,7 @@ session_start();
 
 $app->addBodyParsingMiddleware();
 
-$app->map(['GET', 'POST'], '/', \App\Controllers\HomeController::class);
+$app->map(['GET', 'POST'], '/', \App\Controllers\HomeController::class)->setName('home');
 //$app->post('/', \App\Controllers\HomeController::class);
 
 try {
@@ -32,7 +32,7 @@ $app->get('/about', \App\Controllers\AboutController::class);
 // ADMIN Endpoints
 $_SESSION['auth'] = false;
 
-$app->map(['GET', 'POST'], '/login', \App\Controllers\AuthController::class . ':login');
+$app->map(['GET', 'POST'], '/login', \App\Controllers\AuthController::class . ':login')->setName('login');
 
 $app->group(
     '/admin',

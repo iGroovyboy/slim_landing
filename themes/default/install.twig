@@ -14,6 +14,7 @@
     <h1>Installation</h1>
     <hr>
     <form action="/api/db/check" method="post" name="install">
+    {% if hasDb == false %}
         <h2 class="db-driver">Language</h2>
         <div class="row mb-3 db-driver">
             <div class="col-md-6 mb-3">
@@ -73,6 +74,7 @@
             <span class="spinner spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"></span>
             Check connection
         </button>
+    {% endif %}
 
         <div class="admin-credentials ">
             <h2>Admin credentials</h2>
@@ -93,6 +95,11 @@
 
         <button id="submit" class="btn btn-primary mb-3 visually-hidden" type="submit">Submit</button>
     </form>
+
+        <div class="row success-redirect mx-0 visually-hidden">
+            <div >Basic setup complete! You can visit <a href="/">home</a> or <a href="{{ loginUrl }}">login</a> to admin dashboard now!</div>
+
+        </div>
 </main>
 
 <script>
@@ -106,19 +113,24 @@
           selectDriver  = document.querySelector('select[name="driver"]'),
           dbPort        = document.querySelector('input[name="port"]'),
 
-          dbDriver      = document.querySelector('div.db-driver'),
-          dbName        = document.querySelector('div.db-name'),
-          dbCredentials = document.querySelector('div.db-credentials'),
-          dbDetails     = document.querySelector('div.db-details'),
+          dbDriver      = document.querySelectorAll('.db-driver'),
+          dbName        = document.querySelector('.db-name'),
+          dbCredentials = document.querySelector('.db-credentials'),
+          dbDetails     = document.querySelector('.db-details'),
 
           adminForm     = document.querySelector('div.admin-credentials'),
           adminEmail    = document.querySelector('input[name="admin_email"]'),
           adminPass     = document.querySelector('input[name="admin_password"]'),
           adminStatus   = document.querySelector('div.admin-status'),
 
+          redirectAfterSuccess = document.querySelector('div.success-redirect'),
+
           btnSubmit     = document.getElementById('submit');
 
-    btnCheckDB.addEventListener('click', async function (e) {
+    if (btnCheckDB) {
+      btnCheckDB.addEventListener('click', checkDb);
+    }
+    async function checkDb(e) {
         checkDBLoader.classList.remove(hidden);
 
         let dbData = {};
@@ -142,7 +154,10 @@
         status = result.error ? 0 : 1;
         notice(result.message, checkDBstatus, status);
         if(status){
-            dbDriver.classList.add(hidden);
+            [].forEach.call(dbDriver, el => {
+                el.classList.add(hidden);
+            });
+
             dbName.classList.add(hidden);
             dbCredentials.classList.add(hidden);
             dbDetails.classList.add(hidden);
@@ -151,11 +166,10 @@
             adminForm.classList.remove(hidden);
             btnSubmit.classList.remove(hidden);
         }
-    });
+    }
 
     btnSubmit.addEventListener('click', function (e) {
         e.preventDefault();
-        console.log('---------------submit');
         const data = {
             'admin_email': adminEmail.value,
             'admin_password': adminPass.value,
@@ -171,6 +185,15 @@
         .then(result => result.json())
         .then(result => {
             console.log(result);
+
+            status = result.error ? 0 : 1;
+            notice(result.message, adminStatus, status);
+
+            if (result.success) {
+                btnSubmit.classList.add(hidden);
+                adminForm.classList.add(hidden);
+                redirectAfterSuccess.classList.remove(hidden);
+            }
         });
     });
 
@@ -190,7 +213,10 @@
         }
     });
 
-    selectDriver.addEventListener('change', function (e) {
+    if (selectDriver) {
+      selectDriver.addEventListener('change', changeDriver);
+    }
+    function changeDriver(e) {
         const option = e.target.selectedOptions[0].value;
         switch (option) {
             case 'mysql':
@@ -213,20 +239,22 @@
         }
 
         dbPort.setAttribute('placeholder', port);
-    });
+    }
 
     Window.onLoad = (() => {
-        driver = selectDriver.selectedOptions[0].value;
-        port   = getDbPort(driver);
+        if (selectDriver) {
+            driver = selectDriver.selectedOptions[0].value;
+            port   = getDbPort(driver);
 
-        if('sqlite' === driver){
-            dbName.classList.add(hidden);
-            dbCredentials.classList.add(hidden);
-            dbDetails.classList.add(hidden);
-        } else {
-            dbName.classList.remove(hidden);
-            dbCredentials.classList.remove(hidden);
-            dbDetails.classList.remove(hidden);
+            if('sqlite' === driver){
+                dbName.classList.add(hidden);
+                dbCredentials.classList.add(hidden);
+                dbDetails.classList.add(hidden);
+            } else {
+                dbName.classList.remove(hidden);
+                dbCredentials.classList.remove(hidden);
+                dbDetails.classList.remove(hidden);
+            }
         }
     })();
 
