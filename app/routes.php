@@ -3,7 +3,7 @@
 use App\Models\User;
 use App\Services\Config;
 use App\Services\DB\DB;
-use Slim\Routing\RouteCollectorProxy;
+use Slim\Routing\RouteCollectorProxy as RouteGroup;
 
 /*
  *
@@ -25,11 +25,11 @@ $app->map(['GET', 'POST'], '/login', \App\Controllers\AuthController::class . ':
 try {
     Config::has('db/driver');
 } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
-    $app->post('/api/install_db', \App\Controllers\Api\DbController::class . ':setupDBConnection')->setName('install_db');
+    $app->post('/api/install_db', \App\Controllers\InstallController::class . ':setupDBConnection')->setName('install_db');
 }
 
 if ( ! DB::isConnected() || ! User::hasAny()) {
-    $app->post('/api/install_admin', \App\Controllers\Api\DbController::class . ':setupAdminCredentials')->setName('install_admin');
+    $app->post('/api/install_admin', \App\Controllers\InstallController::class . ':setupAdminCredentials')->setName('install_admin');
 }
 
 
@@ -43,7 +43,7 @@ $_SESSION['auth'] = false;
 
 $app->group(
     '/admin',
-    function (RouteCollectorProxy $group) {
+    function (RouteGroup $group) {
         $group->get('', \App\Controllers\AdminController::class)->setName('dashboard');
 
         $group->get('/logout', \App\Controllers\AuthController::class . ':logout')->setName('logout');

@@ -99,6 +99,9 @@ class Config
         $keys  = array_keys(self::$config);
         $saved = [];
         foreach ($keys as $key) {
+            if (in_array($key, ['app', 'cache'])){
+                continue;
+            }
             $filename         = "$key.json";
             $saved[$filename] = file_put_contents(
                 self::getConfigPath() . $filename,
