@@ -9,6 +9,7 @@
         "migrations": "{db}/migrations",
         "app": "app"
     },
+    "debug": true,
     "theme": "unfold",
     "theme_dev": true
 }

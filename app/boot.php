@@ -9,7 +9,10 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
 define('DS', DIRECTORY_SEPARATOR);
 
-ini_set('display_errors', 1);
+// Setup error handling for prod
+ini_set('display_errors', 0);
+ini_set("log_errors", 1);
+ini_set('error_log', ROOT_DIR . DS . 'errors.log');
 error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
 
 // Container setup
@@ -27,6 +30,15 @@ Config::setPropertyAccessor(
 );
 Config::loadAll();
 Config::set( 'app/paths/root', ROOT_DIR );
+
+// Engage Whoops error handler
+if (Config::get('app/debug')) {
+    $whoops = new \Whoops\Run;
+    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+    $whoops->register();
+
+    ini_set('display_errors', 1);
+}
 
 // Load DB Config if any
 try {
