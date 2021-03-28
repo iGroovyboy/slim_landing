@@ -121,7 +121,7 @@ class InstallController extends BaseController
         return true;
     }
 
-    protected function respond($status, $message)
+    protected function respond($status, $message) // TODO rest/api/json response class with status etc
     {
         $r = [$status => true, 'message' => $message];
         $this->response->getBody()->write(json_encode($r));

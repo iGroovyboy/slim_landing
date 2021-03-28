@@ -62,5 +62,7 @@ $app->group(
 //
 //    $group->get('/login', \App\Controllers\AuthController::class . ':login');
 //    $group->get('/logout', \App\Controllers\AuthController::class . ':logout');
+//        $group->any('/{uri:.*}', \App\Controllers\NotFoundController::class . ':api')->setName('api_404');;
 //});
 
+$app->any('/{uri:.*}', \App\Controllers\NotFoundController::class)->setName('404');
