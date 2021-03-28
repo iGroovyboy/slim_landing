@@ -21,11 +21,12 @@ class ProjectTwigExtension extends \Twig\Extension\AbstractExtension implements 
                 'route', function ($arg)     {
                 global $app;
 
+
                 $url = '';
                 try {
                     $url = $app->getRouteCollector()->getRouteParser()->urlFor($arg);
                 } catch (\Exception $e) {
-                    // TODO log
+                    Log::warning("Twig template tried to reference non-existent route '$arg'. Request uri: {$_SERVER['REQUEST_URI']}");
                 }
 
                 return $url;

@@ -5,6 +5,7 @@ namespace App\Services\DB;
 
 
 use App\Services\Config;
+use App\Services\Log;
 use PDO;
 use PDOStatement;
 
@@ -54,7 +55,7 @@ class DB
         }
     }
 
-    public static function start($db)
+    public static function connect($db)
     {
         $db['path']    = self::$path;
         $db['options'] = [
@@ -109,10 +110,10 @@ class DB
             try {
                 $migrated[] = DB::query($migration)->exec();
             } catch (\PDOException $e) {
-                $e;
+                Log::error('Migration failed for ' . $file);
             }
-            // TODO add logging
-            // ..
+
+            Log::info('Migration successfully run for ' . $file);
         }
 
          return $migrated;

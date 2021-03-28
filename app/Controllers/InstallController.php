@@ -5,9 +5,11 @@ namespace App\Controllers;
 
 
 use App\Models\User;
+use App\Services\Arr;
 use App\Services\Config;
 use App\Services\DB\DB;
 use App\Services\Hash;
+use App\Services\Log;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,15 +20,18 @@ class InstallController extends BaseController
     public function render($data)
     {
         global $app;
-        $routeParser =  $app->getRouteCollector()->getRouteParser();
-        $loginUrl = $routeParser->urlFor('login');
 
-        $hasDb = DB::isConnected();
+        Log::info('Installation is gonna run now');
+
+        $routeParser = $app->getRouteCollector()->getRouteParser();
+        $loginUrl    = $routeParser->urlFor('login');
+
+        $hasDb   = DB::isConnected();
         $hasUser = $hasDb ? User::hasAny() : false;
 
         $vars = [
-            'hasDb' => $hasDb,
-            'hasUser' => $hasUser,
+            'hasDb'    => $hasDb,
+            'hasUser'  => $hasUser,
             'loginUrl' => $loginUrl,
         ];
 
@@ -41,6 +46,8 @@ class InstallController extends BaseController
 
         $input = $this->request->getParsedBody();
 
+        Log::info('User tried to setup DB with config: ' . Arr::toString(Arr::noSensitiveData($input)));
+
         if (DB::DRIVER_SQLITE === $input['driver']) {
             self::maybeCreateSqliteDB();
         }
@@ -50,7 +57,7 @@ class InstallController extends BaseController
         Config::save();
 
         try {
-            DB::start($input);
+            DB::connect($input);
         } catch (\PDOException  $e) {
             return $this->respond('error', $e->getMessage());
         }
@@ -76,6 +83,8 @@ class InstallController extends BaseController
         }
 
         $input = $this->request->getParsedBody();
+        Log::info('User tried to setup admin credentials with email: ' . $input['admin_email']);
+
         if (empty($input['admin_email']) || empty($input['admin_password'])) {
             return $this->respond('error', 'Bad credentials!');
         }
@@ -87,6 +96,8 @@ class InstallController extends BaseController
         try {
             $user = User::add($input['admin_email'], Hash::make($input['admin_password']), 777);
         } catch (\PDOException $e) {
+            Log::error("Couldn't add user to db: " . $e->getMessage());
+
             return $this->respond('error', $e->getMessage());
         }
 
@@ -94,6 +105,8 @@ class InstallController extends BaseController
         if ( ! $user) {
             return $this->respond('error', 'Something went wrong! Admin credentials were not updated!');
         }
+
+        Log::info('Successfully added admin user ' . $input['admin_email']);
 
         return $this->respond('success', 'Admin credentials has been successfully updated!');
     }

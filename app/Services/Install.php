@@ -32,7 +32,6 @@ class Install
         $mkdir = mkdir($destThemesDir, 0664); //0775?
         if ( ! $mkdir && ! file_exists($destThemesDir)) {
             throw new \Exception("Can't create theme folder!");
-            // TODO log - cant create dir
         }
 
         array_map(function ($dir) use ($srcThemesDir, $destThemesDir) {
@@ -66,14 +65,14 @@ class Install
         $mkdir = mkdir($publicThemeDir, 0664); //0775?
         if ( ! $mkdir) {
             if ( ! file_exists($mkdir) || ! is_dir($mkdir)) {
-                // TODO log?
+                throw new \Exception("Couldn't create directory for theme");
             }
         }
 
         $symlink = symlink($originalDir, $link);
 
         if ( ! $symlink) {
-            // TODO log?
+            throw new \Exception("SymLink for theme's assets was not created");
         }
     }
 }
