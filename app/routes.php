@@ -38,7 +38,7 @@ if ( ! DB::isConnected() || ! User::hasAny()) {
  * ADMIN
  *
  */
-$_SESSION['auth'] = false;
+//$_SESSION['isLoggedIn'] = true;
 
 
 $app->group(

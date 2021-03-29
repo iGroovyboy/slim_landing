@@ -24,6 +24,20 @@ class Auth
         return false;
     }
 
+    public static function logout()
+    {
+        self::killCookie();
+        session_destroy();
+        unset($_SESSION);
+    }
+
+    protected static function killCookie()
+    {
+        setcookie (session_name(), "", time() - 3600);
+        session_destroy();
+        session_write_close();
+    }
+
     public static function user()
     {
         return self::$user;

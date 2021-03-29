@@ -5,6 +5,8 @@ namespace App\Controllers;
 
 
 use App\Services\Auth;
+use App\Services\Log;
+use App\Services\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -30,8 +32,11 @@ class AuthController extends BaseController
         return $response;
     }
 
-    public function logout()
+    public function logout(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
+        Auth::logout();
+        Log::info('User logged out');
+        return Route::useNamed('login')->redirect();
     }
 
 }

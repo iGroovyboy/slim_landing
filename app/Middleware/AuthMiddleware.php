@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 use App\Services\Auth;
+use App\Services\Route;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
@@ -27,8 +28,7 @@ class AuthMiddleware
             return $response;
         }
 
-        $response = new Response();
-        return $response->withHeader('Location', '/login'); // TODO replace with named route
+        return Route::redirectToRoute('login');
     }
 }
 
