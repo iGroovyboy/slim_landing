@@ -5,6 +5,7 @@ namespace App\Services;
 
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class Log
 {
@@ -15,6 +16,11 @@ class Log
         self::$logger = new $logger();
 
         return self::$logger;
+    }
+
+    public static function theme($message)
+    {
+        self::$logger->log(LogLevel::WARNING, 'THEME: ' . $message);
     }
 
     public static function __callStatic($method, $args)
