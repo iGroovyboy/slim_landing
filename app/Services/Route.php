@@ -34,21 +34,25 @@ class Route
     {
         $response = $response ?: new Response();
 
-        return $response->withHeader('Location', $location);
+        return $response->withHeader('Location', $location)->withStatus(302);
     }
 
     public static function redirectToRoute($routeName, ResponseInterface $response = null)
     {
         $response = $response ?: new Response();
 
-        return $response->withHeader('Location', self::getUrl($routeName));
+        return $response->withHeader('Location', self::getUrl($routeName))->withStatus(302);
     }
 
     public function redirect(ResponseInterface $response = null)
     {
         $response = $response ?: new Response();
 
-        return $response->withHeader('Location', self::getUrl($this->routeName));
+//        ->createResponse(301)
+//                ->withHeader('Location', (string) $uri->withPath(''))
+
+
+        return $response->withHeader('Location', self::getUrl($this->routeName))->withStatus(302);
     }
 
     public static function useNamed($routeName)

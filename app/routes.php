@@ -15,7 +15,7 @@ $app->get('/help', \App\Controllers\HelpController::class);
 $app->get('/about', \App\Controllers\AboutController::class);
 
 $app->map(['GET', 'POST'], '/login', \App\Controllers\AuthController::class . ':login')->setName('login');
-
+$app->get('/logout', \App\Controllers\AuthController::class . ':logout')->setName('logout');
 
 /*
  *
@@ -46,7 +46,7 @@ $app->group(
     function (RouteGroup $group) {
         $group->get('', \App\Controllers\AdminController::class)->setName('dashboard');
 
-        $group->get('/logout', \App\Controllers\AuthController::class . ':logout')->setName('logout');
+
     }
 )->add(new \App\Middleware\AuthMiddleware());
 
@@ -55,14 +55,22 @@ $app->group(
  * API ENDPOINTS
  *
  */
-//$app->group('/api', function (RouteCollectorProxy $group) {
+//$app->group('/api', function (RouteGroup $group) {
 //    $group->map(['GET', 'DELETE', 'PATCH', 'PUT'], '', function ($request, $response, array $args) {
 //        return $response;
 //    })->setName('user');
 //
-//    $group->get('/login', \App\Controllers\AuthController::class . ':login');
-//    $group->get('/logout', \App\Controllers\AuthController::class . ':logout');
-//        $group->any('/{uri:.*}', \App\Controllers\NotFoundController::class . ':api')->setName('api_404');;
+//
+//    /*
+//     * 404 api pattern
+//     */
+//    $group->any('/{uri:.*}', \App\Controllers\NotFoundController::class . ':api')->setName('api_404');;
 //});
 
+
+/*
+ *
+ * 404 pattern
+ *
+ */
 $app->any('/{uri:.*}', \App\Controllers\NotFoundController::class)->setName('404');

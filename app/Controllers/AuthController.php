@@ -36,6 +36,14 @@ class AuthController extends BaseController
     {
         Auth::logout();
         Log::info('User logged out');
+
+//        $uri = $request->getUri();
+//        return $response->withHeader('Location', (string) $uri->withPath(Route::getUrl('login')))
+//                 ->withStatus(302);
+
+//        return $this->response->createResponse(301)
+//                ->withHeader('Location', (string) $uri->withPath(''));
+
         return Route::useNamed('login')->redirect();
     }
 
