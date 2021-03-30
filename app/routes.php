@@ -5,6 +5,8 @@ use App\Services\Config;
 use App\Services\DB\DB;
 use Slim\Routing\RouteCollectorProxy as RouteGroup;
 
+$app->add(new \App\Middleware\TrailingSlashMiddleware());
+
 /*
  *
  * BASIC PUBLIC ROUTES
@@ -38,7 +40,7 @@ if ( ! DB::isConnected() || ! User::hasAny()) {
  * ADMIN
  *
  */
-//$_SESSION['isLoggedIn'] = true;
+$_SESSION['isLoggedIn'] = true;
 
 
 $app->group(
