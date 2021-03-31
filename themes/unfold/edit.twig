@@ -1,0 +1,22 @@
+{% extends "layout.twig" %}
+
+{% block head %}
+    {{ parent() }}
+    <style type="text/css">
+
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    {% include('blocks/about.twig') %}
+
+    {% include('blocks/services.twig') %}
+
+    {% include('blocks/gallery.twig') %}
+
+    {% include('blocks/prices.twig') %}
+
+    {% include('blocks/contact.twig') %}
+
+{% endblock %}

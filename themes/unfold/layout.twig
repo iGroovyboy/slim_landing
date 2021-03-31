@@ -45,6 +45,23 @@
 
     {{ include('blocks/footer.twig') }}
 
+    <style>
+        .hovered {
+        }
+
+        .hovered::after {
+            background-color: rgba(0,250,0,0.4);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            content: ' ';
+        }
+
+    </style>
+
+    <div class="x-edit" style="position: absolute; top: 0; z-index: 1000000;"></div>
 
     <!--====== jquery js ======-->
     <script src="{{ assets }}/js/vendor/modernizr-3.6.0.min.js"></script>
@@ -75,6 +92,9 @@
 
     <!--====== Main js ======-->
     <script src="{{ assets }}/js/main.js"></script>
+
+    <!--====== Edit js ======-->
+    <script src="/themes/default/assets/js/x-edit.js"></script>
 
 </body>
 
