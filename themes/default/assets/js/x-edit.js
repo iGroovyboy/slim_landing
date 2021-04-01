@@ -1,3 +1,4 @@
+import * as editors from './editors.js';
 import * as api from './api.js';
 
 
@@ -97,17 +98,23 @@ function getPos(el) {
 }
 
 async function getEditor(type, data) {
+    // try to load custom theme editors
     let themeEditors = await import(`../../../${theme}/assets/blockeditors/test.js`);
-    console.log(themeEditors.someFunc());
+
+    if (typeof(themeEditors.getTags) === 'function' && themeEditors.getTags().includes(type)){
+        return themeEditors.getEditor(type);
+    }
+
+    // default editors
 
     // image uploader
     if (type === 'img') {
-        return `<form name="node_editor"><input type="text" class="form-control" name="text" value="${data}"><img src="" alt=""></form>`;
+        return editors.img(data);
     }
 
     // single input[type=text]
     else {
-        return `<form name="node_editor"><input type="text" class="form-control" name="text" value="${data}"></form>`;
+        return editors.text(data);
     }
 
 }
