@@ -42,12 +42,13 @@ if ( ! DB::isConnected() || ! User::hasAny()) {
  */
 $_SESSION['isLoggedIn'] = true;
 
+$app->get('/edit', \App\Controllers\EditController::class)->setName('x-edit')->add(new \App\Middleware\AuthMiddleware());
 
 $app->group(
     '/admin',
     function (RouteGroup $group) {
         $group->get('', \App\Controllers\AdminController::class)->setName('dashboard');
-        $group->get('/edit', \App\Controllers\EditController::class)->setName('x-edit');
+
 
     }
 )->add(new \App\Middleware\AuthMiddleware());

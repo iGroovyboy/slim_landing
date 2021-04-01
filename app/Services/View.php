@@ -108,8 +108,11 @@ class View
             $twigOptions['cache'] = ROOT_DIR . '/cache';
         }
 
+        $loader = new \Twig\Loader\FilesystemLoader($themePath);
+        $loader->addPath(Config::getPath('app/paths/themes', 'default'), 'default_theme');
+
         $twig = new \Twig\Environment(
-            new \Twig\Loader\FilesystemLoader($themePath),
+            $loader,
             $twigOptions
         );
 
