@@ -54,5 +54,5 @@ function addEditButtonToEl(el) {
 
 function getPos(el) {
     var rect = el.getBoundingClientRect();
-    return { x: rect.left , y: rect.top };
+    return { x: rect.left , y: rect.top + window.scrollY };
 }
