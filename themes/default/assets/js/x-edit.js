@@ -3,16 +3,15 @@ console.log('edit!');
 //find all editable elements
 let editables = document.querySelectorAll('[data-edit]');
 
-const c = editables.length;
-console.log(`found ${c} editables`);
-const layer = document.querySelector('.x-edit');
+const layer = document.querySelector('.x-edit'),
+    modalSingle = document.getElementById('modalSingle');
 
 [].forEach.call(editables, el => {
     htmlContent = el.innerHTML;
     id = el.attributes['data-edit'].value;
     // type = getElType(el);
 
-    console.log(el);
+    //console.log(el);
 
     addEditButtonToEl(el);
 
@@ -23,7 +22,7 @@ const layer = document.querySelector('.x-edit');
 let editButtons = document.querySelectorAll('.x-edit');
 [].forEach.call(editButtons, el => {
     el.addEventListener('mouseover', function (e) {
-        console.clear();
+        // console.clear();
         dataSrc = e.target.attributes['data-src'].value
 
         console.log(dataSrc);
@@ -36,6 +35,23 @@ let editButtons = document.querySelectorAll('.x-edit');
         [].forEach.call(editables, editable => {
             editable.classList.remove('hovered');
         });
+    });
+
+    el.addEventListener('click', function (e) {
+        console.clear();
+        console.log(e);
+
+        dataSrc = e.target.attributes['data-src'].value
+
+        input = `<input type="text" class="form-control" value="123">`;
+        // show modal
+        console.log(modalSingle.querySelector(".name"))
+        modalSingle.querySelector(".name").textContent = 'wewewe'
+        modalSingle.querySelector(".slot").innerHTML = input
+
+        var modalSingleB = new bootstrap.Modal(modalSingle, {backdrop: false, keyboard: true, focus: true })
+        modalSingleB.show();
+
     });
 });
 
