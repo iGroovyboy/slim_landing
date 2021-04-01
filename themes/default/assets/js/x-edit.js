@@ -1,33 +1,28 @@
-console.log('edit!');
+import * as api from './api.js';
 
-//find all editable elements
-let editables = document.querySelectorAll('[data-edit]');
 
-const layer = document.querySelector('.x-edit'),
-    modalSingle = document.getElementById('modalSingle');
+let editables     = document.querySelectorAll('[data-edit]'),
+    currentKey    = null;
 
+const layer       = document.querySelector('.x-edit'),
+      modalEditor = document.getElementById('modalEditor'),
+      modalSave   = modalEditor.querySelector('[data-action="save"]'),
+      modalCancel = modalEditor.querySelector('[data-action="cancel"]');
+
+// add edit button to all editable elements
 [].forEach.call(editables, el => {
-    htmlContent = el.innerHTML;
-    id = el.attributes['data-edit'].value;
-    // type = getElType(el);
+    const id = el.attributes['data-edit'].value;
 
-    //console.log(el);
-
-    addEditButtonToEl(el);
-
+    addEditButtonToElement(el);
 });
 
-
-
-let editButtons = document.querySelectorAll('.x-edit');
-[].forEach.call(editButtons, el => {
+// bind basic mouse actions to edit buttons
+[].forEach.call(document.querySelectorAll('.x-edit'), el => {
     el.addEventListener('mouseover', function (e) {
-        // console.clear();
-        dataSrc = e.target.attributes['data-src'].value
-
-        console.log(dataSrc);
-
-        document.querySelector(`[data-edit=${dataSrc}]`).classList.add('hovered');
+        if (undefined !== e.target.attributes['data-src']){
+            const key = e.target.attributes['data-src'].value;
+            document.querySelector(`[data-edit=${key}]`).classList.add('hovered');
+        }
     });
 
     el.addEventListener('mouseleave', function (e) {
@@ -37,25 +32,45 @@ let editButtons = document.querySelectorAll('.x-edit');
         });
     });
 
-    el.addEventListener('click', function (e) {
-        console.clear();
-        console.log(e);
+    el.addEventListener('click', async function (e) {
+        if (undefined === e.target.attributes['data-src']){
+            return;
+        }
 
-        dataSrc = e.target.attributes['data-src'].value
+        const key = e.target.attributes['data-src'].value;
+        const editorType = document.querySelector(`[data-edit=${key}]`).tagName;
 
-        input = `<input type="text" class="form-control" value="123">`;
-        // show modal
-        console.log(modalSingle.querySelector(".name"))
-        modalSingle.querySelector(".name").textContent = 'wewewe'
-        modalSingle.querySelector(".slot").innerHTML = input
+        let response = await api.get(key);
 
-        var modalSingleB = new bootstrap.Modal(modalSingle, {backdrop: false, keyboard: true, focus: true })
-        modalSingleB.show();
+        let editor = getEditor(editorType, response.data) || '';
 
+        modalEditor.setAttribute('data-key', key);
+        modalEditor.querySelector(".key").textContent = key;
+        modalEditor.querySelector(".slot").innerHTML = editor;
+
+        let modalObj = new bootstrap.Modal(modalEditor, {backdrop: false, keyboard: true, focus: true})
+        modalObj.show();
     });
 });
 
-function addEditButtonToEl(el) {
+// save node
+modalSave.addEventListener('click', async function (e) {
+    let data = {};
+
+    const formData = new FormData(document.forms.node_editor)
+    for (let key of formData.keys()) {
+       data[key] = formData.get(key);
+    }
+
+    const key = modalEditor.attributes['data-key'].value;
+
+    console.log(`saving: ${key}`, data);
+
+    let response = await api.set(key, data);
+
+});
+
+function addEditButtonToElement(el) {
     const coords = getPos(el);
     const id = el.attributes['data-edit'].value;
 
@@ -70,5 +85,18 @@ function addEditButtonToEl(el) {
 
 function getPos(el) {
     var rect = el.getBoundingClientRect();
-    return { x: rect.left , y: rect.top + window.scrollY };
+    return {x: rect.left, y: rect.top + window.scrollY};
+}
+
+function getEditor(type, data) {
+    // image uploader
+    if (type === 'img') {
+        return `<form name="node_editor"><input type="text" class="form-control" name="text" value="${data}"><img src="" alt=""></form>`;
+    }
+
+    // single input[type=text]
+    else {
+        return `<form name="node_editor"><input type="text" class="form-control" name="text" value="${data}"></form>`;
+    }
+
 }

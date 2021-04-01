@@ -48,8 +48,6 @@ $app->group(
     '/admin',
     function (RouteGroup $group) {
         $group->get('', \App\Controllers\AdminController::class)->setName('dashboard');
-
-
     }
 )->add(new \App\Middleware\AuthMiddleware());
 
@@ -58,17 +56,21 @@ $app->group(
  * API ENDPOINTS
  *
  */
-//$app->group('/api', function (RouteGroup $group) {
-//    $group->map(['GET', 'DELETE', 'PATCH', 'PUT'], '', function ($request, $response, array $args) {
-//        return $response;
-//    })->setName('user');
-//
-//
-//    /*
-//     * 404 api pattern
-//     */
-//    $group->any('/{uri:.*}', \App\Controllers\NotFoundController::class . ':api')->setName('api_404');;
-//});
+$app->group(
+    '/api',
+    function (RouteGroup $group) {
+        $group->map(
+            ['GET', 'DELETE', 'PATCH', 'PUT'],
+            '/nodes/{key}',
+            \App\Controllers\Api\NodesController::class
+        )->setName('nodes');
+
+        /*
+         * 404 api pattern
+         */
+        $group->any('/{uri:.*}', \App\Controllers\NotFoundController::class . ':api')->setName('api_404');
+    }
+);
 
 
 /*

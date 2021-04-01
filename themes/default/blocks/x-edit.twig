@@ -3,7 +3,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        z-index: 1000000;
+        z-index: 1000000000;
     }
 
     .x-edit__hotspots {
@@ -31,21 +31,19 @@
 <div class="x-edit">
     <div class="x-edit__hotspots"></div>
     <div class="x-edit__modals">
-
-        <!-- Basic modal -->
-        <div class="modal fade" id="modalSingle" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="modalEditor" tabindex="-1" aria-hidden="true" data-key="">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit: <span class="name"></span></h5>
+                        <h5 class="modal-title">Element: <span class="key"></span></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="slot"></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button type="button" data-action="cancel" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" data-action="save" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </div>
