@@ -1,13 +1,15 @@
 import * as api from './api.js';
 
 
-let editables     = document.querySelectorAll('[data-edit]'),
-    currentKey    = null;
+let editables     = document.querySelectorAll('[data-edit]');
 
 const layer       = document.querySelector('.x-edit'),
+      theme       = layer.attributes['data-theme'].value,
       modalEditor = document.getElementById('modalEditor'),
       modalSave   = modalEditor.querySelector('[data-action="save"]'),
       modalCancel = modalEditor.querySelector('[data-action="cancel"]');
+
+
 
 // add edit button to all editable elements
 [].forEach.call(editables, el => {
@@ -42,7 +44,7 @@ const layer       = document.querySelector('.x-edit'),
 
         let response = await api.get(key);
 
-        let editor = getEditor(editorType, response.data) || '';
+        let editor = await getEditor(editorType, response.data) || '';
 
         modalEditor.setAttribute('data-key', key);
         modalEditor.querySelector(".key").textContent = key;
@@ -70,6 +72,12 @@ modalSave.addEventListener('click', async function (e) {
 
 });
 
+// cancel save node
+modalCancel.addEventListener('click', async function (e) {
+    modalEditor.attributes['data-key'].value = '';
+});
+
+
 function addEditButtonToElement(el) {
     const coords = getPos(el);
     const id = el.attributes['data-edit'].value;
@@ -88,7 +96,10 @@ function getPos(el) {
     return {x: rect.left, y: rect.top + window.scrollY};
 }
 
-function getEditor(type, data) {
+async function getEditor(type, data) {
+    let themeEditors = await import(`../../../${theme}/assets/blockeditors/test.js`);
+    console.log(themeEditors.someFunc());
+
     // image uploader
     if (type === 'img') {
         return `<form name="node_editor"><input type="text" class="form-control" name="text" value="${data}"><img src="" alt=""></form>`;

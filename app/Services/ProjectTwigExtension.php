@@ -11,6 +11,7 @@ class ProjectTwigExtension extends \Twig\Extension\AbstractExtension implements 
     {
         return [
             'assets' => '/themes/' . Config::get('app/theme') . '/' . Config::$assetsDir,
+            'theme' => Config::get('app/theme')
         ];
     }
 

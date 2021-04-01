@@ -20,8 +20,8 @@ class NodesController
         $this->key      = $args['key'];
         $this->body     = $request->getParsedBody();
 
-        $method     = strtolower($request->getMethod());
-        $this->body = $this->$method();
+        $method         = strtolower($request->getMethod());
+        $this->body     = $this->$method();
 
         $this->response->getBody()->write(json_encode(['data' => $this->body]));
 
