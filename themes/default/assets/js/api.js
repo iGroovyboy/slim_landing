@@ -1,4 +1,4 @@
-async function get(key) {
+export async function get(key) {
     let response = await fetch(`/api/nodes/${key}`, {
         method: 'GET',
         headers: {
@@ -9,7 +9,7 @@ async function get(key) {
     return await response.json();
 }
 
-async function set(key, value) {
+export async function set(key, value) {
     let response = await fetch(`/api/nodes/${key}`, {
         method: 'PUT',
         headers: {
@@ -21,4 +21,15 @@ async function set(key, value) {
     return await response.json();
 }
 
-export {get, set};
+export async function getAllowedFiletypes(key) {
+    let response = await fetch(`/api/filetypes/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+    });
+
+    return await response.json();
+}
+
+
