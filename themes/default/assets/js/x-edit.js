@@ -49,7 +49,8 @@ const layer       = document.querySelector('.x-edit'),
 
         modalEditor.setAttribute('data-key', key);
         modalEditor.querySelector(".key").textContent = key;
-        modalEditor.querySelector(".slot").innerHTML = editor;
+        modalEditor.querySelector(".slot").innerHTML = editor.form;
+        layer.querySelector(".x-edit__scripts").innerHTML = `<script>${editor.scripts}</script>`;
 
         let modalObj = new bootstrap.Modal(modalEditor, {backdrop: false, keyboard: true, focus: true})
         modalObj.show();
@@ -108,7 +109,7 @@ async function getEditor(type, data) {
     // default editors
 
     // image uploader
-    if (type === 'img') {
+    if (type === 'IMG') {
         return editors.img(data);
     }
 
