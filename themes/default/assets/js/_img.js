@@ -1,3 +1,5 @@
+import * as lib from './lib.js';
+
 export function img(data) {
     return {
         form: form(data),
@@ -10,14 +12,21 @@ function form(data) {
 <form name="node_editor" enctype="multipart/form-data">
   <div>
     <label for="profile_pic">Choose file to upload</label>
-    <input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png" onchange="preview_image(event)">
+    <input class="wrewq" type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png">
   </div>
 </form>
 `;
 }
 
 function scripts(data) {
-    return function preview_image(event) {
+    return (() => {
         console.log('hoooray')
-    }
+
+        document.addEventListener('change', function (e) {
+            if (lib.hasClass(e.target, 'wrewq')) {
+                console.log('you updated  arr image 2')
+            }
+        }, false)
+
+    })()
 }
