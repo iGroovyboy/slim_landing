@@ -1,4 +1,4 @@
-import * as lib from './lib.js';
+import * as fn from '../js/lib.js';
 
 export function img(data) {
     return {
@@ -23,7 +23,7 @@ function scripts(data) {
         console.log('hoooray')
 
         document.addEventListener('change', function (e) {
-            if (lib.hasClass(e.target, 'wrewq')) {
+            if (fn.hasClass(e.target, 'wrewq')) {
                 console.log('you updated  arr image 2')
             }
         }, false)

@@ -1,4 +1,5 @@
-import * as editors from './editors.js';
+import * as fn from './lib.js';
+import * as editors from '../blockeditors/editors.js';
 import * as api from './api.js';
 
 
@@ -10,44 +11,49 @@ const layer       = document.querySelector('.x-edit'),
       modalSave   = modalEditor.querySelector('[data-action="save"]'),
       modalCancel = modalEditor.querySelector('[data-action="cancel"]');
 
+const data_edit   = 'data-edit',
+      data_src    = 'data-src',
+      data_key    = 'data-key',
+      hovered     = 'hovered',
 
+      currentThemeEditorsPath = `../../../${theme}/assets/blockeditors/test.js`;
 
 // add edit button to all editable elements
 [].forEach.call(editables, el => {
-    const id = el.attributes['data-edit'].value;
+    const id = el.attributes[data_edit].value;
 
     addEditButtonToElement(el);
 });
 
 // bind basic mouse actions to edit buttons
-[].forEach.call(document.querySelectorAll('.x-edit'), el => {
+[].forEach.call(document.querySelectorAll('button.x-edit'), el => {
     el.addEventListener('mouseover', function (e) {
-        if (undefined !== e.target.attributes['data-src']){
-            const key = e.target.attributes['data-src'].value;
-            document.querySelector(`[data-edit=${key}]`).classList.add('hovered');
+        if (undefined !== e.target.attributes[data_src]){
+            const key = e.target.attributes[data_src].value;
+            document.querySelector(`[data-edit=${key}]`).classList.add(hovered);
         }
     });
 
     el.addEventListener('mouseleave', function (e) {
-        editables = document.querySelectorAll(`[data-edit]`);
+        editables = document.querySelectorAll(`[${data_edit}]`);
         [].forEach.call(editables, editable => {
-            editable.classList.remove('hovered');
+            editable.classList.remove(hovered);
         });
     });
 
     el.addEventListener('click', async function (e) {
-        if (undefined === e.target.attributes['data-src']){
+        if (undefined === e.target.attributes[data_src]){
             return;
         }
 
-        const key = e.target.attributes['data-src'].value;
-        const editorType = document.querySelector(`[data-edit=${key}]`).tagName;
+        const key = e.target.attributes[data_src].value;
+        const editorType = document.querySelector(`[${data_edit}=${key}]`).tagName;
 
         let response = await api.get(key);
 
         let editor = await getEditor(editorType, response.data) || '';
 
-        modalEditor.setAttribute('data-key', key);
+        modalEditor.setAttribute(data_key, key);
         modalEditor.querySelector(".key").textContent = key;
         modalEditor.querySelector(".slot").innerHTML = editor.form;
         layer.querySelector(".x-edit__scripts").innerHTML = `<script>${editor.scripts}</script>`;
@@ -66,7 +72,7 @@ modalSave.addEventListener('click', async function (e) {
        data[key] = formData.get(key);
     }
 
-    const key = modalEditor.attributes['data-key'].value;
+    const key = modalEditor.attributes[data_key].value;
 
     console.log(`saving: ${key}`, data);
 
@@ -76,13 +82,13 @@ modalSave.addEventListener('click', async function (e) {
 
 // cancel save node
 modalCancel.addEventListener('click', async function (e) {
-    modalEditor.attributes['data-key'].value = '';
+    modalEditor.attributes[data_key].value = '';
 });
 
 
 function addEditButtonToElement(el) {
-    const coords = getPos(el);
-    const id = el.attributes['data-edit'].value;
+    const coords = fn.getPos(el);
+    const id = el.attributes[data_edit].value;
 
     console.log(coords);
     const pos = `left: ${coords.x}px; top: ${coords.y}px;`;
@@ -93,14 +99,10 @@ function addEditButtonToElement(el) {
     layer.insertAdjacentHTML('beforeend', html);
 }
 
-function getPos(el) {
-    var rect = el.getBoundingClientRect();
-    return {x: rect.left, y: rect.top + window.scrollY};
-}
 
 async function getEditor(type, data) {
     // try to load custom theme editors
-    let themeEditors = await import(`../../../${theme}/assets/blockeditors/test.js`);
+    let themeEditors = await import(currentThemeEditorsPath);
 
     if (typeof(themeEditors.getTags) === 'function' && themeEditors.getTags().includes(type)){
         return themeEditors.getEditor(type);
