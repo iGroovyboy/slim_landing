@@ -6,6 +6,7 @@ import * as api from './api.js';
 let editables     = document.querySelectorAll('[data-edit]');
 
 const layer       = document.querySelector('.x-edit'),
+      hotspots    = layer.querySelector('.x-edit__hotspots'),
       theme       = layer.attributes['data-theme'].value,
       modalEditor = document.getElementById('modalEditor'),
       modalSave   = modalEditor.querySelector('[data-action="save"]'),
@@ -22,7 +23,7 @@ const data_edit   = 'data-edit',
 [].forEach.call(editables, el => {
     const id = el.attributes[data_edit].value;
 
-    addEditButtonToElement(el);
+    addEditButtonToElement(el, hotspots);
 });
 
 // bind basic mouse actions to edit buttons
@@ -86,17 +87,16 @@ modalCancel.addEventListener('click', async function (e) {
 });
 
 
-function addEditButtonToElement(el) {
+function addEditButtonToElement(el, parent) {
     const coords = fn.getPos(el);
     const id = el.attributes[data_edit].value;
 
-    console.log(coords);
     const pos = `left: ${coords.x}px; top: ${coords.y}px;`;
 
     const html =
         `<button class="x-edit" data-src="${id}" style="position: absolute; ${pos} z-index: 10000; width: 40px; height: 40px; border-radius: 40px; border: none;  background-color: rgba(255,0,0,0.7); color: white;">E</button>`;
 
-    layer.insertAdjacentHTML('beforeend', html);
+    parent.insertAdjacentHTML('beforeend', html);
 }
 
 
