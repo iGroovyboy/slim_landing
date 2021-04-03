@@ -1,0 +1,8 @@
+create table table_name
+(
+	id integer
+		constraint table_name_pk
+			primary key autoincrement,
+	name text not null,
+	value text
+);

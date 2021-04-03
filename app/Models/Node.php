@@ -10,6 +10,9 @@ class Node extends Model
 {
     public const TABLE_NAME = 'nodes';
 
+    public const TYPE_FIELD = 'field';
+    public const TYPE_BLOCK = 'block';
+
     public function __construct()
     {
 //        DB::in(self::TABLE_NAME);
@@ -34,34 +37,11 @@ class Node extends Model
         DB::test('cookoo');
     }
 
-    public static function createTable()
-    {
-        $sql = "
-        CREATE TABLE `nodes` (
-            `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
-            `type` VARCHAR(64) NOT NULL,
-            `slug` TINYTEXT,
-            `value` LONGTEXT,
-            `parent_id` BIGINT,
-            PRIMARY KEY `id`
-        ) ENGINE=MyISAM;
-        ";
-
-        $sqlite = "
-        CREATE TABLE `nodes` (
-            `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
-            `type` VARCHAR(64) NOT NULL,
-            `slug` TINYTEXT,
-            `value` LONGTEXT,
-            `parent_id` BIGINT,
-            PRIMARY KEY `id`
-        )";
-    }
-
     // Node::of('Page', 3 )::get();
     // Node::of('Page', 3 )::get('element', 'li');
-    public static function get(string $option = null, $default = null)
+    public static function get(string $key = null, $default = null)
     {
+
         $parentEmpty = empty(self::$parentType);
         $childEmpty  = empty($option);
 
@@ -69,18 +49,19 @@ class Node extends Model
         $hasOnlyChild  = $parentEmpty && ! $childEmpty;
 
         if ($hasOnlyParent || $hasOnlyChild) {
-            //get
+            // get once
+            $value = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key'")->first();
         } else {
             //get + get
         }
 
 
-        $value = DB::query("SELECT value FROM {self::TABLE_NAME} WHERE name = '$option'")->first();
+        $value = DB::query("SELECT value FROM {self::TABLE_NAME} WHERE name = '$key'")->first();
 
         return $value ?: $default;
     }
 
-    public static function update(string $option, string $value)
+    public static function set(string $option, string $value)
     {
         $optionExists = self::get($option);
         if ($optionExists) {

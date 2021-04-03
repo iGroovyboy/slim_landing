@@ -1,0 +1,15 @@
+create table nodes
+(
+	id integer
+		constraint nodes_pk
+			primary key autoincrement,
+	key text,
+	value text,
+	type text,
+	parent_id integer,
+	order integer default 0
+);
+
+create unique index nodes_key_uindex
+	on nodes (key);
+
