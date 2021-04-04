@@ -34,4 +34,10 @@ class Arr
         return implode(', ', $array);
     }
 
+    public static function unsetIfEmpty(&$var, $key = 'items')
+    {
+        if (empty($var->$key)) {
+            unset($var->$key);
+        }
+    }
 }

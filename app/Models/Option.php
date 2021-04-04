@@ -32,7 +32,7 @@ class Option extends Model
         if ($optionExists) {
             $value = DB::query("UPDATE ". self::TABLE_NAME . " SET value = '$value' WHERE name = '$name'")->exec();
         } else {
-            $value = DB::query("INSERT INTO ". self::TABLE_NAME . " (name, value) VALUES (?, ?) ", [$name, $value])->exec();
+            $value = DB::query("INSERT INTO ". self::TABLE_NAME . " (name, value) VALUES (?, ?)", [$name, $value])->exec();
         }
         return $value;
     }

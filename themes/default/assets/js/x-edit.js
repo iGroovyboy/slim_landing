@@ -50,14 +50,18 @@ const data_edit   = 'data-edit',
         const key = e.target.attributes[data_src].value;
         const editorType = document.querySelector(`[${data_edit}=${key}]`).tagName;
 
+        console.log('tag = ' + editorType);
+
         let response = await api.get(key);
 
         let editor = await getEditor(editorType, response.data) || '';
 
         modalEditor.setAttribute(data_key, key);
         modalEditor.querySelector(".key").textContent = key;
-        modalEditor.querySelector(".slot").innerHTML = editor.form;
+        modalEditor.querySelector(".key").textContent = key;
+        modalEditor.querySelector(".slot").innerHTML  = editor.form;
         layer.querySelector(".x-edit__scripts").innerHTML = `<script>${editor.scripts}</script>`;
+        layer.querySelector(".x-edit__styles style").innerHTML = editor.styles;
 
         let modalObj = new bootstrap.Modal(modalEditor, {backdrop: false, keyboard: true, focus: true})
         modalObj.show();
@@ -113,6 +117,10 @@ async function getEditor(type, data) {
     // image uploader
     if (type === 'IMG') {
         return editors.img(data);
+    }
+
+    if (type === 'A' || type === 'BUTTON') {
+        return editors.link(data);
     }
 
     // single input[type=text]

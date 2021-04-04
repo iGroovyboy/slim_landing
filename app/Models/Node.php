@@ -4,7 +4,9 @@
 namespace App\Models;
 
 
+use App\Services\Arr;
 use App\Services\DB\DB;
+use App\Services\Str;
 
 class Node extends Model
 {
@@ -37,48 +39,85 @@ class Node extends Model
         DB::test('cookoo');
     }
 
+    private static function getNestedNodesById($id, $tbl)
+    {
+        $me    = __FUNCTION__;
+        $items = DB::query("SELECT * FROM $tbl WHERE parent_id = '$id'")->get();
+
+        $numeric_keys = array_keys($items);
+
+        foreach ($items as $i => $item) {
+            $items[$item->key]        = $item;
+            $items[$item->key]->items = DB::query("SELECT * FROM $tbl WHERE parent_id = '{$item->id}'")->get();
+            Arr::unsetIfEmpty($items[$item->key]);
+
+            foreach ($items[$item->key]->items as $c => $child) {
+                $items[$item->key]->items[$child->key]        = $child;
+                $items[$item->key]->items[$child->key]->items = self::$me($child->id, $tbl);
+                Arr::unsetIfEmpty($items[$item->key]->items[$child->key]);
+                unset($items[$item->key]->items[$c]);
+            }
+
+            unset($items[$i]);
+        }
+
+
+        return $items;
+    }
+
+    public static function getAllFor($key)
+    {
+        $tbl = self::TABLE_NAME;
+
+        $data = new \stdClass();
+        $data->$key = DB::query("SELECT * FROM $tbl WHERE key = '$key'")->first();
+
+        $data->$key->items = self::getNestedNodesById($data->$key->id, $tbl);
+        Arr::unsetIfEmpty($data->$key);
+
+        return $data;
+    }
+
     // Node::of('Page', 3 )::get();
     // Node::of('Page', 3 )::get('element', 'li');
-    public static function get(string $key = null, $default = null)
+    public static function get(string $key = null)
     {
-
         $parentEmpty = empty(self::$parentType);
-        $childEmpty  = empty($option);
+        $childEmpty  = empty($key);
 
         $hasOnlyParent = ! $parentEmpty && $childEmpty;
         $hasOnlyChild  = $parentEmpty && ! $childEmpty;
 
         if ($hasOnlyParent || $hasOnlyChild) {
             // get once
-            $value = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key'")->first();
+            $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key'")->first();
         } else {
-            //get + get
+            $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key' AND parent_id = '1' ")->first();
         }
 
-
-        $value = DB::query("SELECT value FROM {self::TABLE_NAME} WHERE name = '$key'")->first();
-
-        return $value ?: $default;
+        return Str::maybeUnserialize($result->value);
     }
 
-    public static function set(string $option, string $value)
+    public static function set(string $key, string $value)
     {
-        $optionExists = self::get($option);
-        if ($optionExists) {
-            $value = DB::query("UPDATE {self::TABLE_NAME} SET value = '$value' WHERE name = '$option'")->exec();
+        $keyExists = self::get($key);
+        if ($keyExists) {
+            $value = DB::query("UPDATE " . self::TABLE_NAME . " SET value = '$value' WHERE key = '$key'")->exec();
         } else {
-            $value = DB::query("INSERT INTO value FROM {self::TABLE_NAME} WHERE name = '$option'")->exec();
+            $value = DB::query("INSERT INTO " . self::TABLE_NAME . " (key, value) VALUES (?, ?)", [$key, $value])->exec();
         }
+
+        return $value;
     }
 
     public static function delete(string $option)
     {
-        return DB::query("DELETE FROM {self::TABLE_NAME} WHERE name = '$option'")->exec();
+        return DB::query("DELETE FROM " . self::TABLE_NAME . " WHERE name = '$option'")->exec();
     }
 
     public static function deleteAll()
     {
-        return DB::query("DELETE FROM {self::TABLE_NAME}")->exec();
+        return DB::query("DELETE FROM " . self::TABLE_NAME)->exec();
     }
 
 

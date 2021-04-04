@@ -1,6 +1,6 @@
 import * as fn from '../js/lib.js';
 
-export function link(data) {
+export function myCustomName(data) {
     return {
         form: form(data),
         scripts: scripts(data),
@@ -12,12 +12,7 @@ function form(data) {
     return `
 <form name="node_editor">
     <div>
-        <label for="title">Link text</label>
-        <input class="link_title" name="title" type="text">
-    </div>
-    <div>
-        <label for="href">Link address</label>
-        <input class="link_href" name="href" type="text">
+        <input class="custom__input1" name="text" type="text">
     </div>
 </form>
 `;

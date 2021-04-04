@@ -4,12 +4,14 @@
 namespace App\Controllers\Api;
 
 
+use App\Models\Node;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class NodesController
 {
     protected string $key;
+    protected $body;
     protected ?string $value;
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
@@ -37,8 +39,6 @@ class NodesController
 
     protected function put()
     {
-
-
-        return 'set val';
+        return Node::set($this->key, serialize($this->body));
     }
 }

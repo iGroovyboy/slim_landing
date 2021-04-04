@@ -3,19 +3,20 @@ import * as fn from '../js/lib.js';
 export function img(data) {
     return {
         form: form(data),
-        scripts: scripts(data)
+        scripts: scripts(data),
+        styles: styles(),
     }
 }
 
 function form(data) {
     return `
 <form name="node_editor" enctype="multipart/form-data">
-    <div class="preview">
+    <div class="preview" style="">
         <p>No files</p>
     </div>
     <div>
         <label for="profile_pic">Choose file to upload</label>
-        <input class="default__img-upload" name="image" type="file" accept=".jpg, .jpeg, .png">
+        <input class="default__img-upload" name="image" type="file">
     </div>
 </form>
 `;
@@ -64,4 +65,18 @@ function scripts(data) {
         }, false)
 
     })()
+}
+
+function styles() {
+    return `
+    .x-edit .preview {
+
+    }
+    .x-edit .preview ul {
+        display: flex;
+    }
+    .x-edit .preview li {
+        width: 40%; height: 10rem; overflow: hidden; margin: 5%;
+    }
+    `;
 }
