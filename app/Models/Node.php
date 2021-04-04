@@ -42,25 +42,22 @@ class Node extends Model
     private static function getNestedNodesById($id, $tbl)
     {
         $me    = __FUNCTION__;
-        $items = DB::query("SELECT * FROM $tbl WHERE parent_id = '$id'")->get();
-
-        $numeric_keys = array_keys($items);
+        $items = DB::query("SELECT * FROM $tbl WHERE parent_id = '$id' ORDER BY `order`")->get();
 
         foreach ($items as $i => $item) {
-            $items[$item->key]        = $item;
-            $items[$item->key]->items = DB::query("SELECT * FROM $tbl WHERE parent_id = '{$item->id}'")->get();
-            Arr::unsetIfEmpty($items[$item->key]);
+            $items[$item['key']]          = Arr::only($item, ['value', 'items']);
+            $items[$item['key']]['items'] = DB::query("SELECT * FROM $tbl WHERE parent_id = '{$item['id']}' ORDER BY `order`")->get();
+            self::unsetEmptyItems($items[$item['key']]);
 
-            foreach ($items[$item->key]->items as $c => $child) {
-                $items[$item->key]->items[$child->key]        = $child;
-                $items[$item->key]->items[$child->key]->items = self::$me($child->id, $tbl);
-                Arr::unsetIfEmpty($items[$item->key]->items[$child->key]);
-                unset($items[$item->key]->items[$c]);
+            foreach ($items[$item['key']]['items'] as $c => $child) {
+                $items[$item['key']]['items'][$child['key']]          = Arr::only($child, ['value', 'items']);
+                $items[$item['key']]['items'][$child['key']]['items'] = self::$me($child['id'], $tbl);
+                self::unsetEmptyItems($items[$item['key']]['items'][$child['key']]);
+                unset($items[$item['key']]['items'][$c]);
             }
 
             unset($items[$i]);
         }
-
 
         return $items;
     }
@@ -69,13 +66,20 @@ class Node extends Model
     {
         $tbl = self::TABLE_NAME;
 
-        $data = new \stdClass();
-        $data->$key = DB::query("SELECT * FROM $tbl WHERE key = '$key'")->first();
+        $data[$key] = DB::query("SELECT * FROM $tbl WHERE key = '$key'")->first();
 
-        $data->$key->items = self::getNestedNodesById($data->$key->id, $tbl);
-        Arr::unsetIfEmpty($data->$key);
+        $data[$key]['items'] = self::getNestedNodesById($data[$key]['id'], $tbl);
+        $data[$key] = Arr::only($data[$key], ['value', 'items']);
+        self::unsetEmptyItems($data[$key]);
 
         return $data;
+    }
+
+    public static function unsetEmptyItems(&$var)
+    {
+        if(empty($var['items'])){
+            unset($var['items']);
+        }
     }
 
     // Node::of('Page', 3 )::get();

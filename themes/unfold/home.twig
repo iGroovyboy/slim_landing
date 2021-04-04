@@ -8,7 +8,18 @@
 {% endblock %}
 
 {% block content %}
+--
+    <div>
+    {{ menu }}
+    {{ menu.value }}
 
+    {{ data.menu.items }}
+    {{ data.menu.items.menu_about }}
+
+    {{ data.menu.items.menu_about.value }}
+
+    *-*-*
+        </div>
     {% include('blocks/about.twig') %}
 
     {% include('blocks/services.twig') %}

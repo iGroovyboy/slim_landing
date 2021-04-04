@@ -34,10 +34,14 @@ class Arr
         return implode(', ', $array);
     }
 
-    public static function unsetIfEmpty(&$var, $key = 'items')
+    public static function only($arr, $key)
     {
-        if (empty($var->$key)) {
-            unset($var->$key);
-        }
+        return array_filter(
+            $arr,
+            function ($id) use ($key) {
+                return is_array($key) ? in_array($id, $key) : $id === $key;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
     }
 }
