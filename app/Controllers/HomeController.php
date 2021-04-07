@@ -24,10 +24,8 @@ class HomeController extends BaseController
                 ->render($this->request->getParsedBody());
         }
 
-//        $data = Node::getAllFor('header__action');
-
         $data = Node::getAllFor('home');
 
-        return $this->view->render('home', ['menu' =>'gh']);
+        return $this->view->render('home', ['slug' => 'home', 'asd'=>'345', 'data' => $data['home']['items']]);
     }
 }

@@ -3,11 +3,13 @@ import * as editors from '../blockeditors/editors.js';
 import * as api from './api.js';
 
 
-let editables     = document.querySelectorAll('[data-edit]');
+let editables     = document.querySelectorAll('[data-edit]'),
+    modalObj      = null;
 
 const layer       = document.querySelector('.x-edit'),
       hotspots    = layer.querySelector('.x-edit__hotspots'),
       theme       = layer.attributes['data-theme'].value,
+
       modalEditor = document.getElementById('modalEditor'),
       modalSave   = modalEditor.querySelector('[data-action="save"]'),
       modalCancel = modalEditor.querySelector('[data-action="cancel"]');
@@ -15,14 +17,18 @@ const layer       = document.querySelector('.x-edit'),
 const data_edit   = 'data-edit',
       data_src    = 'data-src',
       data_key    = 'data-key',
+      data_empty  = 'data-empty',
       hovered     = 'hovered',
 
       currentThemeEditorsPath = `../../../${theme}/assets/blockeditors/test.js`;
+
+
 
 // add edit button to all editable elements
 [].forEach.call(editables, el => {
     const id = el.attributes[data_edit].value;
 
+    placeholdEmptyElements(el);
     addEditButtonToElement(el, hotspots);
 });
 
@@ -63,7 +69,7 @@ const data_edit   = 'data-edit',
         layer.querySelector(".x-edit__scripts").innerHTML = `<script>${editor.scripts}</script>`;
         layer.querySelector(".x-edit__styles style").innerHTML = editor.styles;
 
-        let modalObj = new bootstrap.Modal(modalEditor, {backdrop: false, keyboard: true, focus: true})
+        modalObj = new bootstrap.Modal(modalEditor, {backdrop: false, keyboard: true, focus: true})
         modalObj.show();
     });
 });
@@ -83,6 +89,7 @@ modalSave.addEventListener('click', async function (e) {
 
     let response = await api.set(key, data);
 
+    modalObj.hide();
 });
 
 // cancel save node
@@ -93,14 +100,36 @@ modalCancel.addEventListener('click', async function (e) {
 
 function addEditButtonToElement(el, parent) {
     const coords = fn.getPos(el);
-    const id = el.attributes[data_edit].value;
+    const id     = el.attributes[data_edit].value;
 
-    const pos = `left: ${coords.x}px; top: ${coords.y}px;`;
+    const pos    = `left: ${coords.x}px; top: ${coords.y}px;`;
+    const color  = el.hasAttribute(data_empty) ? "background-color: rgba(255, 167, 0, 0.7)" : '';
 
-    const html =
-        `<button class="x-edit" data-src="${id}" style="position: absolute; ${pos} z-index: 10000; width: 40px; height: 40px; border-radius: 40px; border: none;  background-color: rgba(255,0,0,0.7); color: white;">E</button>`;
+    const html   = `<button class="x-edit" data-src="${id}" style="${pos} ${color}">E</button>`;
 
     parent.insertAdjacentHTML('beforeend', html);
+}
+
+function placeholdEmptyElements(el) {
+    const tag = el.tagName;
+
+    if('P' === tag) {
+        el.textContent = el.textContent || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+        el.setAttribute(data_empty, 'true');
+    }
+    if('SPAN' === tag){
+        el.textContent = el.textContent || 'oooo';
+        el.setAttribute(data_empty, 'true');
+    }
+    if('A' === tag){
+        el.textContent = el.textContent || 'AAAAAAAA';
+        el.setAttribute(data_empty, 'true');
+    }
+    if(tag.includes('H')) {
+        el.textContent = el.textContent || 'ENTER TEXT';
+        el.setAttribute(data_empty, 'true');
+    }
+
 }
 
 

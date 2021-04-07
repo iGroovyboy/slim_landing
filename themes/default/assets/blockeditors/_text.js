@@ -1,3 +1,5 @@
+import * as fn from '../js/lib.js';
+
 export function text(data) {
     return {
         form: form(data),
@@ -6,5 +8,9 @@ export function text(data) {
 }
 
 export function form(data) {
-    return `<form name="node_editor"><input type="text" class="form-control" name="text" value="${data}"></form>`;
+    return `<form name="node_editor">
+<input type="hidden" class="form-control" name="parent" value="${fn.getPageSlug()}">
+<input type="text" class="form-control" name="text" value="${data}">
+</form>`;
 }
+

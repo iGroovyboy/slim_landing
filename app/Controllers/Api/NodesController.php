@@ -32,18 +32,18 @@ class NodesController
 
     protected function get()
     {
-        return Node::get($this->key);
+        return Node::get($this->key) ?: '';
     }
 
     protected function put()
     {
-        if ( ! is_array($this->body)) {
-            return Node::set($this->key, $this->body);
-        }
+        $parent = $this->body['parent'] ?: null;
+        unset($this->body['parent']);
+
         if (count($this->body) === 1) {
-            return Node::set($this->key, reset($this->body));
+            return Node::set($this->key, reset($this->body), $parent);
         }
 
-        return Node::set($this->key, serialize($this->body));
+        return Node::set($this->key, serialize($this->body), $parent);
     }
 }

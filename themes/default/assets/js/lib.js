@@ -37,3 +37,7 @@ export function getFileSize(number) {
         return (number / 1048576).toFixed(1) + 'MB';
     }
 }
+
+export function getPageSlug() {
+    return document.querySelector('body').attributes['data-parent'].value || null;
+}

@@ -42,11 +42,11 @@ class Node extends Model
     private static function getNestedNodesById($id, $tbl)
     {
         $me    = __FUNCTION__;
-        $items = DB::query("SELECT * FROM $tbl WHERE parent_id = '$id' ORDER BY `order`")->get();
+        $items = DB::query("SELECT * FROM $tbl WHERE parent_key = '$id' ORDER BY `order`")->get();
 
         foreach ($items as $i => $item) {
             $items[$item['key']]          = Arr::only($item, ['value', 'items']);
-            $items[$item['key']]['items'] = DB::query("SELECT * FROM $tbl WHERE parent_id = '{$item['id']}' ORDER BY `order`")->get();
+            $items[$item['key']]['items'] = DB::query("SELECT * FROM $tbl WHERE parent_key = '{$item['id']}' ORDER BY `order`")->get();
             self::unsetEmptyItems($items[$item['key']]);
 
             foreach ($items[$item['key']]['items'] as $c => $child) {
@@ -68,7 +68,7 @@ class Node extends Model
 
         $data[$key] = DB::query("SELECT * FROM $tbl WHERE key = '$key'")->first();
 
-        $data[$key]['items'] = self::getNestedNodesById($data[$key]['id'], $tbl);
+        $data[$key]['items'] = self::getNestedNodesById($data[$key]['key'], $tbl);
         $data[$key] = Arr::only($data[$key], ['value', 'items']);
         self::unsetEmptyItems($data[$key]);
 
@@ -96,19 +96,20 @@ class Node extends Model
             // get once
             $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key'")->first();
         } else {
-            $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key' AND parent_id = '1' ")->first();
+            $parent = static::$parentId;
+            $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key' AND parent_key = '$parent' ")->first();
         }
 
         return $result['value'] ? Str::maybeUnserialize($result['value']) : null;
     }
 
-    public static function set(string $key, string $value)
+    public static function set(string $key, string $value, string $parent = null)
     {
         $keyExists = self::get($key);
         if ($keyExists) {
-            $value = DB::query("UPDATE " . self::TABLE_NAME . " SET value = '$value' WHERE key = '$key'")->exec();
+            $value = DB::query("UPDATE " . self::TABLE_NAME . " SET value = '$value', parent_key = '$parent' WHERE key = '$key'")->exec();
         } else {
-            $value = DB::query("INSERT INTO " . self::TABLE_NAME . " (key, value) VALUES (?, ?)", [$key, $value])->exec();
+            $value = DB::query("INSERT INTO " . self::TABLE_NAME . " (key, value, parent_key) VALUES (?, ?, ?)", [$key, $value, $parent])->exec();
         }
 
         return $value;

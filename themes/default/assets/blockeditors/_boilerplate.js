@@ -12,6 +12,7 @@ function form(data) {
     return `
 <form name="node_editor">
     <div>
+        <input class="form-control" name="parent" type="hidden" value="${fn.getPageSlug()}">
         <input class="custom__input1" name="text" type="text">
     </div>
 </form>
