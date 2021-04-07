@@ -19,11 +19,11 @@ class NodesController
         $this->request  = $request;
         $this->response = $response;
 
-        $this->key      = $args['key'];
-        $this->body     = $request->getParsedBody();
+        $this->key  = $args['key'];
+        $this->body = $request->getParsedBody();
 
-        $method         = strtolower($request->getMethod());
-        $this->body     = $this->$method();
+        $method     = strtolower($request->getMethod());
+        $this->body = $this->$method();
 
         $this->response->getBody()->write(json_encode(['data' => $this->body]));
 
@@ -32,13 +32,18 @@ class NodesController
 
     protected function get()
     {
-
-
-        return 'get val';
+        return Node::get($this->key);
     }
 
     protected function put()
     {
+        if ( ! is_array($this->body)) {
+            return Node::set($this->key, $this->body);
+        }
+        if (count($this->body) === 1) {
+            return Node::set($this->key, reset($this->body));
+        }
+
         return Node::set($this->key, serialize($this->body));
     }
 }

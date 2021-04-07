@@ -99,7 +99,7 @@ class Node extends Model
             $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key' AND parent_id = '1' ")->first();
         }
 
-        return Str::maybeUnserialize($result->value);
+        return $result['value'] ? Str::maybeUnserialize($result['value']) : null;
     }
 
     public static function set(string $key, string $value)
