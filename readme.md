@@ -50,3 +50,7 @@ Slimland compiles page aftger every cache bust to be a generic html page when us
     choco install make
 
 **Chokolatey** comes with nodejs installation.
+
+## WINDOWS installation
+
+App relies on symlinks to avoid theme's code doubling. Server must be started with admin rights to allow the app create symlinks.

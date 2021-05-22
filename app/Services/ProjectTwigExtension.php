@@ -11,8 +11,7 @@ class ProjectTwigExtension extends \Twig\Extension\AbstractExtension implements 
 
     public function getGlobals(): array
     {
-        $debugbar = new StandardDebugBar();
-        $debugbarRenderer = $debugbar->getJavascriptRenderer();
+        $debugbarRenderer = DebugBar::get()->getJavascriptRenderer();
 
         return [
             'assets' => '/themes/' . Config::get('app/theme') . '/' . Config::$assetsDir,
