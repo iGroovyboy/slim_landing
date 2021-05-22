@@ -1,11 +1,19 @@
 <?php
 
 use App\Services\Config;
+use App\Services\DebugBar;
+use App\Services\DebugSlimCollector;
 use App\Services\Install;
 use App\Services\Log;
-use DI\Container;
-use Slim\Factory\AppFactory;
-use Symfony\Component\PropertyAccess\PropertyAccess;
+use DI\ContainerBuilder as ContainerBuilder;
+use DI\Bridge\Slim\Bridge as SlimlandAppFactory;
+//use Slim\Factory\AppFactory as SlimlandAppFactory;
+use Symfony\Component\PropertyAccess\PropertyAccess as PropertyAccessor;
+
+
+DebugBar::boot(\DebugBar\StandardDebugBar::class);
+DebugBar::get("messages")->addMessage("Started boot");
+
 
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
 define('DS', DIRECTORY_SEPARATOR);
@@ -18,16 +26,36 @@ error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
 
 Log::boot(\Slim\Logger::class);
 
-// Container setup
-$container = new Container();
-AppFactory::setContainer($container);
+// Container/DI setup ----------------------------------------------------------------------
+$containerBuilder = new ContainerBuilder();
+$containerBuilder->addDefinitions(__DIR__ . DS . 'container.php');
+
+// if prod
+// $containerBuilder->enableCompilation(__DIR__ . '/tmp');
+// $containerBuilder->writeProxiesToFile(true, __DIR__ . '/tmp/proxies');
+
+// if weird errors
+// $containerBuilder->ignorePhpDocErrors(true);
+// $containerBuilder->useAnnotations(false)
+
+$container = $containerBuilder->build();
+
+//SlimlandAppFactory::setContainer($container); // native Slim
 
 // Create app
-$app = AppFactory::create();
+$app = SlimlandAppFactory::create($container);
+
+
+
+
+
+// Container/DI setup OVER ----------------------------------------------------------------------
+
+DebugBar::get()->addCollector(new DebugSlimCollector($app));
 
 // Load Configs
 Config::setPropertyAccessor(
-    PropertyAccess::createPropertyAccessorBuilder()
+    PropertyAccessor::createPropertyAccessorBuilder()
         ->enableExceptionOnInvalidIndex()
         ->getPropertyAccessor()
 );
@@ -53,3 +81,5 @@ try {
 
 // Install available themes so that install or default theme would run
 Install::publicThemes();
+
+DebugBar::get("messages")->addMessage("Finished boot");

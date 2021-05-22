@@ -40,7 +40,7 @@ if ( ! DB::isConnected() || ! User::hasAny()) {
  * ADMIN
  *
  */
-$_SESSION['isLoggedIn'] = true;
+$_SESSION['isLoggedIn'] = true; // dev only; remove on prod
 
 $app->get('/edit', \App\Controllers\EditController::class)->setName('x-edit')->add(new \App\Middleware\AuthMiddleware());
 

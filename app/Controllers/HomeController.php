@@ -8,7 +8,7 @@ use App\Models\Node;
 use App\Models\User;
 use App\Services\Config;
 
-class HomeController extends BaseController
+final class HomeController extends BaseController
 {
     public function default(): string
     {

@@ -23,14 +23,23 @@ class BaseController
     public function __construct(ContainerInterface $container, View $view)
     {
         $this->container = $container;
-        $this->view = $view;
+        $this->view      = $view;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    /**
+     * @param ServerRequestInterface $request PSR-7 request
+     * @param ResponseInterface $response PSR-7 response
+     * @param array $args The route's placeholder arguments
+     *
+     * @return ResponseInterface
+     */
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, ?array $args): ResponseInterface
     {
         $this->request  = $request;
         $this->response = $response;
         $this->args     = $args;
+
+        $alsoArgs =  $this->request->getAttributes()['__route__']->getArguments();
 
         $this->body = $this->default();
 
