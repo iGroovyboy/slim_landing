@@ -4,14 +4,24 @@
 namespace App\Services;
 
 
+use DebugBar\StandardDebugBar;
+
 class ProjectTwigExtension extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface
 {
 
     public function getGlobals(): array
     {
+        $debugbar = new StandardDebugBar();
+        $debugbarRenderer = $debugbar->getJavascriptRenderer();
+
         return [
             'assets' => '/themes/' . Config::get('app/theme') . '/' . Config::$assetsDir,
-            'theme' => Config::get('app/theme')
+            'theme' => Config::get('app/theme'),
+
+            'debug_head' => $debugbarRenderer->renderHead(),
+            'debug_js' => $debugbarRenderer->render()
+
+
         ];
     }
 
