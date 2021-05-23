@@ -6,7 +6,8 @@ use App\Services\DebugSlimCollector;
 use App\Services\Install;
 use App\Services\Log;
 use DI\ContainerBuilder as ContainerBuilder;
-use DI\Bridge\Slim\Bridge as SlimlandAppFactory;
+use App\Services\DI\Bridge as SlimlandAppFactory;
+//use DI\Bridge\Slim\Bridge as SlimlandAppFactory;
 //use Slim\Factory\AppFactory as SlimlandAppFactory;
 use Symfony\Component\PropertyAccess\PropertyAccess as PropertyAccessor;
 
@@ -43,7 +44,7 @@ $container = $containerBuilder->build();
 //SlimlandAppFactory::setContainer($container); // native Slim
 
 // Create app
-$app = SlimlandAppFactory::create($container);
+$app = SlimlandAppFactory::createFromContainer($container);
 
 
 
