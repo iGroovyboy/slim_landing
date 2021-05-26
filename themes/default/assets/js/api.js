@@ -11,11 +11,8 @@ export async function get(key) {
 
 export async function set(key, value) {
     let response = await fetch(`/api/nodes/${key}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(value)
+        method: 'POST',
+        body: value
     });
 
     return await response.json();

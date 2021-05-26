@@ -76,18 +76,14 @@ const data_edit   = 'data-edit',
 
 // save node
 modalSave.addEventListener('click', async function (e) {
-    let data = {};
-
-    const formData = new FormData(document.forms.node_editor)
-    for (let key of formData.keys()) {
-       data[key] = formData.get(key);
-    }
+    const formData = new FormData(document.forms.node_editor);
+    formData.set('parent', fn.getPageSlug());
 
     const key = modalEditor.attributes[data_key].value;
 
-    console.log(`saving: ${key}`, data);
+    console.log(`saving: ${key}`, formData);
 
-    let response = await api.set(key, data);
+    const response = await api.set(key, formData);
 
     modalObj.hide();
 });
@@ -97,6 +93,16 @@ modalCancel.addEventListener('click', async function (e) {
     modalEditor.attributes[data_key].value = '';
 });
 
+function getFormDataAsArray() {
+    let data = {};
+
+    for (let key of formData.keys()) {
+        console.log(key, formData.get(key));
+        data[key] = formData.get(key);
+    }
+
+    return data;
+}
 
 function addEditButtonToElement(el, parent) {
     const coords = fn.getPos(el);

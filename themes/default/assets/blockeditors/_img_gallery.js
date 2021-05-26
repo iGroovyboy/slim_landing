@@ -12,12 +12,11 @@ function form(data) {
     return `
 <form name="node_editor" enctype="multipart/form-data">
     <div class="preview" style="">
-        <p>No image</p>
+        <p>No files</p>
     </div>
     <div>
-        <label for="profile_pic">Choose a file to upload</label>
-        <input class="default__img-upload" name="files[]" type="file">
-        <input type="hidden" name="datatype" value="image">
+        <label for="profile_pic">Choose files to upload</label>
+        <input class="default__img-upload" name="images[]" type="file" multiple="multiple">
     </div>
 </form>
 `;
@@ -35,7 +34,7 @@ function scripts(data) {
                       preview = document.querySelector('form[name="node_editor"] .preview');
 
                 if (files.length === 0) {
-                    preview.innerHTML = '<p>No image</p>';
+                    preview.innerHTML = '<p>No files</p>';
                 }
 
                 let list = document.createElement('ul');
@@ -50,10 +49,11 @@ function scripts(data) {
                         let image = document.createElement('img');
                         image.src = window.URL.createObjectURL(files[i]);
 
+                        // const title = `<input type="text" placeholder="Title" name="img_${i}">`;
                         let title = document.createElement('input');
                         title.placeholder = "Title";
                         title.type = "text";
-                        title.name = "img_title[]";
+                        title.name = "img_title_" + i;
 
                         listItem.appendChild(image);
                         listItem.appendChild(p);

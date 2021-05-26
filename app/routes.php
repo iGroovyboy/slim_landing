@@ -60,7 +60,7 @@ $app->group(
     '/api',
     function (RouteGroup $group) {
         $group->map(
-            ['GET', 'DELETE', 'PATCH', 'PUT'],
+            ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
             '/nodes/{key}',
             \App\Controllers\Api\NodesController::class
         )->setName('nodes');

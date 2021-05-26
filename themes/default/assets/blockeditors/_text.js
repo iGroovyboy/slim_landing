@@ -9,8 +9,8 @@ export function text(data) {
 
 export function form(data) {
     return `<form name="node_editor">
-<input type="hidden" class="form-control" name="parent" value="${fn.getPageSlug()}">
 <input type="text" class="form-control" name="text" value="${data}">
+<input type="hidden" name="datatype" value="text">
 </form>`;
 }
 
