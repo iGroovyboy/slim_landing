@@ -6,10 +6,8 @@ create table nodes
 	key text,
 	value text,
 	type text,
-	parent_id integer,
-	order integer default 0
+	parent_key text,
+	"order" integer default 0 not null
 );
 
-create unique index nodes_key_uindex
-	on nodes (key);
 
