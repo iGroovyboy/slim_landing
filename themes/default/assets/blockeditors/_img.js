@@ -41,15 +41,23 @@ function scripts(data) {
 
                 for (var i = 0; i < files.length; i++) {
                     let listItem = document.createElement('li');
-                    let p = document.createElement('p');
 
                     if (fn.validFileType(files[i])) {
+                        let p = document.createElement('p');
                         p.textContent = 'File name ' + files[i].name + ', file size ' + fn.getFileSize(files[i].size) + '.';
+
                         let image = document.createElement('img');
                         image.src = window.URL.createObjectURL(files[i]);
 
+                        // const title = `<input type="text" placeholder="Title" name="img_${i}">`;
+                        let title = document.createElement('input');
+                        title.placeholder = "Title";
+                        title.type = "text";
+                        title.name = "img_title_" + i;
+
                         listItem.appendChild(image);
                         listItem.appendChild(p);
+                        listItem.appendChild(title);
 
                     } else {
                         p.textContent = 'File name ' + files[i].name + ': Not a valid file type. Update your selection.';
