@@ -41,3 +41,30 @@ export function getFileSize(number) {
 export function getPageSlug() {
     return document.querySelector('body').attributes['data-parent'].value || null;
 }
+
+/**
+ * Packs FormData data into 'regular' array/obj to let it be unpacked later and be used
+ * with templating
+ *
+ * @param {FormData} formData
+ * @param {[string]} keys
+ */
+export function prepareFormDataForExport(formData, keys) {
+    let data = [];
+
+    for (const pair of formData.entries()) {
+        keys.forEach(function (keyName, i, arr) {
+            if (keyName===pair[0]) {
+                keyName = keyName.replace('[]', ''); // remove '[]' from keys
+
+                if (data[keyName] === undefined){
+                   data[keyName] = [];
+                }
+
+                data[keyName].push( pair[1] )
+            }
+        });
+    }
+
+    return data;
+}

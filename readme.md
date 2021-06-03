@@ -24,6 +24,7 @@ Theme developers must place all css, js and images into 'assets' folder. So them
     /themes
         /my-custom-theme
             /assets
+                /blockeditors
                 /css
                 /js
                 /images
@@ -35,6 +36,7 @@ Theme developers must place all css, js and images into 'assets' folder. So them
             home.twig
 
 All the assets paths in html should be replaced with **{{ assets }}** in twig templates.
+
 
 ## CACHE
 Slimland compiles page aftger every cache bust to be a generic html page when user gets it. While developing you might want to disable caching:

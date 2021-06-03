@@ -16,7 +16,7 @@ function form(data) {
     </div>
     <div>
         <label for="profile_pic">Choose a file to upload</label>
-        <input class="default__img-upload" name="files[]" type="file">
+        <input class="default__img-upload" name="files[]" type="file" multiple="multiple">
         <input type="hidden" name="datatype" value="image">
     </div>
 </form>
@@ -25,9 +25,26 @@ function form(data) {
 
 function scripts(data) {
     return (() => {
+        window.prepareForm = function (formData) {
+            const keys = ['files[]', 'img_title[]'];
+
+            const {files, img_title} = fn.prepareFormDataForExport(formData, keys);
+
+            const data = []
+            for (let [i, file] of files.entries()) {
+                data.push({
+                    'src': file.name,
+                    'alt': img_title[i],
+                });
+            }
+
+            console.log('save: ', data );
+
+            formData.set('json', JSON.stringify(data));
+            return formData;
+        }
         document.addEventListener('change', function (e) {
             if (fn.hasClass(e.target, 'default__img-upload')) {
-                console.log('you updated  arr image 2', e)
                 // preview.src = window.URL.createObjectURL(e.target.files[0]);
                 // image.src = window.URL.createObjectURL(input.files[0]);
 

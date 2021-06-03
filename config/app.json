@@ -3,6 +3,7 @@
         "root": ".",
         "themes": "themes",
         "public": "public",
+        "uploads": "{public}/storage",
         "cache": "{public}/{themes}",
         "db": "database",
         "dbfilename": "sqlite.db",

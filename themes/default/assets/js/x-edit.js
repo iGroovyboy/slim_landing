@@ -56,8 +56,6 @@ const data_edit   = 'data-edit',
         const key = e.target.attributes[data_src].value;
         const editorType = document.querySelector(`[${data_edit}=${key}]`).tagName;
 
-        console.log('tag = ' + editorType);
-
         let response = await api.get(key);
 
         let editor = await getEditor(editorType, response.data) || '';
@@ -76,12 +74,11 @@ const data_edit   = 'data-edit',
 
 // save node
 modalSave.addEventListener('click', async function (e) {
-    const formData = new FormData(document.forms.node_editor);
-    formData.set('parent', fn.getPageSlug());
-
     const key = modalEditor.attributes[data_key].value;
 
-    console.log(`saving: ${key}`, formData);
+    let formData = new FormData(document.forms.node_editor);
+    formData.set('parent', fn.getPageSlug());
+    formData = window.prepareForm(formData);
 
     const response = await api.set(key, formData);
 

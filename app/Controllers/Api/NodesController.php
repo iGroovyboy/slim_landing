@@ -6,6 +6,9 @@ namespace App\Controllers\Api;
 
 use App\DataTypes\Transformer;
 use App\Models\Node;
+use App\Services\Config;
+use App\Services\Log;
+use App\Services\Storage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -45,27 +48,38 @@ final class NodesController
         return Node::get($this->key) ?: '';
     }
 
+    /**
+     * @uses  \Slim\Psr7\UploadedFile $uploadedFile
+     * @return bool
+     * @throws \Exception
+     */
     public function post()
     {
         $parent = $this->body['parent'] ?: null;
         unset($this->body['parent']);
 
-        if ($this->uploadedFiles){
+        $files = [];
+        $directory = Config::getPath('app/paths/uploads','ttt');
 
-            foreach ($this->uploadedFiles['files'] as $uploadedFile) { /** @var \Slim\Psr7\UploadedFile $uploadedFile */
+        if ($uploadedFiles = $this->uploadedFiles['files']) {
+            foreach ($uploadedFiles as $i => $uploadedFile) {
                 if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                    $filename = moveUploadedFile($directory, $uploadedFile);
-                    $response->getBody()->write('Uploaded: ' . $filename . '<br/>');
+                    $files[$i] = Storage::moveUploadedFile($directory, $uploadedFile);
                 }
             }
+
+            Log::info('Uploaded files: ' . count($files) . '. Files: ' . join(', ', $files));
         }
 
-        $files = [];
+//        $formatSubpath = DS . 'assets' . DS . 'blockeditors' . DS;
+//        $formatPaths = [
+//            Config::getPath('app/paths/themes', 'default' . $formatSubpath ),
+//            Config::getPath('app/paths/themes', Config::get('app/theme') . $formatSubpath )
+//        ];
 
-//        $transformer->data    = $this->body;
-//        $transformer->type    = $this->body['datatype'];
-//        $transformer->uploads = $files ?: [];
-//        $transformer->encode();
+        $d = json_decode($this->body['data'], true);
+
+        $body = Transformer::run($this->body['datatype'], $this->body, $files);
 
         if (count($this->body) === 1) {
             return Node::set($this->key, reset($this->body), $parent);
