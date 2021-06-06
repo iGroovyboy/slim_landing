@@ -74,4 +74,15 @@ class Str
 
         return false;
     }
+
+    // https://github.com/laravel/framework/blob/ceb3217fa65e9cfb7ca8287f5e2aca11467fd8a1/src/Illuminate/Support/Str.php#L713
+    public static function str_starts_with($haystack, $needle) {
+        foreach ((array) $needle as $needle) {
+            if ((string) $needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

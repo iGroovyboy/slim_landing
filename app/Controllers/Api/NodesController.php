@@ -9,6 +9,9 @@ use App\Models\Node;
 use App\Services\Config;
 use App\Services\Log;
 use App\Services\Storage;
+use App\Services\Str;
+use Intervention\Image\Image;
+use Intervention\Image\ImageManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -49,9 +52,9 @@ final class NodesController
     }
 
     /**
-     * @uses  \Slim\Psr7\UploadedFile $uploadedFile
      * @return bool
      * @throws \Exception
+     * @uses  \Slim\Psr7\UploadedFile $uploadedFile
      */
     public function post()
     {
@@ -59,25 +62,51 @@ final class NodesController
         unset($this->body['parent']);
 
         $files = [];
-        $directory = Config::getPath('app/paths/uploads','ttt');
+        $subFolder = date('Y') . DS . date('m');
+        $directory = Config::getPath('app/paths/uploads', $subFolder);
 
+        // TODO: check if filetype is allowed
+        // upload files
         if ($uploadedFiles = $this->uploadedFiles['files']) {
             foreach ($uploadedFiles as $i => $uploadedFile) {
+                /** @var \Slim\Psr7\UploadedFile $uploadedFile */
                 if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                    $files[$i] = Storage::moveUploadedFile($directory, $uploadedFile);
+                    $fileinfo  = Storage::moveUploadedFile($directory, $uploadedFile);
+
+                    $id = $uploadedFile->getClientFilename();
+
+                    $files[$id]['full'] = $fileinfo->getPathname();
+
+                    if (!empty($this->body['thumbnailSize']) && Str::str_starts_with($uploadedFile->getClientMediaType(), 'image')) {
+                        $path     = $fileinfo->getPath();
+                        $basename = $fileinfo->getBasename('.' . $fileinfo->getExtension());
+                        $img_filename = $path . DS . 'thumb_' . $basename;
+
+                        $dimensions = array_slice(explode('x', $this->body['thumbnailSize']), 0, 2);
+                        array_walk(
+                            $dimensions,
+                            function (&$size) {
+                                $size = (int)$size;
+                            }
+                        );
+
+                        try {
+                            $img_manager = new ImageManager();
+                            $thumbExt    = 'jpg';
+                            $thumb       = $img_manager->make($fileinfo->getPathname())
+                                                       ->fit(300, 300)
+                                                       ->save($img_filename, 60, $thumbExt);
+                            $files[$id]['thumb'] = $img_filename . $thumbExt;
+
+                        } catch (\Intervention\Image\Exception\MissingDependencyException $e) {
+                            Log::error('Thumbnail creation error: ' . $e->getMessage());
+                        }
+                    }
                 }
             }
 
             Log::info('Uploaded files: ' . count($files) . '. Files: ' . join(', ', $files));
         }
-
-//        $formatSubpath = DS . 'assets' . DS . 'blockeditors' . DS;
-//        $formatPaths = [
-//            Config::getPath('app/paths/themes', 'default' . $formatSubpath ),
-//            Config::getPath('app/paths/themes', Config::get('app/theme') . $formatSubpath )
-//        ];
-
-        $d = json_decode($this->body['data'], true);
 
         $body = Transformer::run($this->body['datatype'], $this->body, $files);
 

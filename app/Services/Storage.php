@@ -5,34 +5,47 @@ namespace App\Services;
 
 
 use Psr\Http\Message\UploadedFileInterface;
+use SplFileInfo;
 
 class Storage
 {
+    const IMAGE_MIME = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/svg+xml',
+        'image/gif',
+        'image/webp',
+        'image/png'
+    ];
     /**
      * @param string $directory
      * @param UploadedFileInterface $uploadedFile
+     * @param bool $randomName
      *
      * @uses \Slim\Psr7\UploadedFile $uploadedFile
      *
-     * @return string
+     * @return SplFileInfo
      * @throws \Exception
      */
-    public static function moveUploadedFile(string $directory, UploadedFileInterface $uploadedFile)
+    public static function moveUploadedFile(string $directory, UploadedFileInterface $uploadedFile, $randomName = false): SplFileInfo
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
 
-        // see http://php.net/manual/en/function.random-bytes.php
-        $basename = bin2hex(random_bytes(8));
-        $filename = sprintf('%s.%0.8s', $basename, $extension);
+        $filename = $uploadedFile->getClientFilename();
+        if ($randomName) {
+            // see http://php.net/manual/en/function.random-bytes.php
+            $basename = bin2hex(random_bytes(8));
+            $filename = sprintf('%s.%0.8s', $basename, $extension);
+        }
 
         if (!file_exists($directory)) {
-            mkdir($directory);
+            mkdir($directory, 0777,true);
         }
 
         $targetPath = $directory . DIRECTORY_SEPARATOR . $filename;
 
         $uploadedFile->moveTo($targetPath);
 
-        return $targetPath;
+        return new SplFileInfo($targetPath);
     }
 }

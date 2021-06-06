@@ -25,21 +25,21 @@ class Transformer
      *
      * @return string
      */
-    public function run(string $type, array $body, ?array $files): string
+    public static function run(string $type, array $body, ?array $files): string
     {
-//        $format = $this->format[$type] ?: null;
-//
-//        if (empty($format)) {
-//            Log::warning("Transformer has no format data for a resource action. Editor type: $type");
-//            return serialize($body + $files);
-//        }
+        if (empty($files)) {
+            return $body['json'];
+        }
 
+        $data = json_decode($body['json'], true);
+        foreach ($data as $i => $element) {
+            $filename = $element['src'];
+            if (in_array($filename, $files)) {
+                $data[$i]['src'] = $files[$filename]['full'] ?: $data[$i]['src'];
+            }
+        }
 
-
-        unset($body['datatype']);
-
-
-
+        return $data;
     }
 
     /**

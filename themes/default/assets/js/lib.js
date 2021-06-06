@@ -68,3 +68,11 @@ export function prepareFormDataForExport(formData, keys) {
 
     return data;
 }
+
+export function createEl(tagName, attributes) {
+    let element = document.createElement(tagName);
+    for (const attr in attributes) {
+        element[attr] = attributes[attr];
+    }
+    return element;
+}

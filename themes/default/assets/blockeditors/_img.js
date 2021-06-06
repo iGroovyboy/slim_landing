@@ -16,8 +16,9 @@ function form(data) {
     </div>
     <div>
         <label for="profile_pic">Choose a file to upload</label>
-        <input class="default__img-upload" name="files[]" type="file" multiple="multiple">
+        <input class="default__img-upload" name="files[]" type="file">
         <input type="hidden" name="datatype" value="image">
+        <input type="hidden" name="thumbnailSize" value="300x400">
     </div>
 </form>
 `;
@@ -38,8 +39,6 @@ function scripts(data) {
                 });
             }
 
-            console.log('save: ', data );
-
             formData.set('json', JSON.stringify(data));
             return formData;
         }
@@ -55,22 +54,29 @@ function scripts(data) {
                     preview.innerHTML = '<p>No image</p>';
                 }
 
-                let list = document.createElement('ul');
+                let list = fn.createEl('ul');
 
                 for (var i = 0; i < files.length; i++) {
-                    let listItem = document.createElement('li');
+                    let listItem = fn.createEl('li');
 
                     if (fn.validFileType(files[i])) {
-                        let p = document.createElement('p');
+                        const p = fn.createEl('p');
                         p.textContent = 'File name ' + files[i].name + ', file size ' + fn.getFileSize(files[i].size) + '.';
 
-                        let image = document.createElement('img');
+                        const image = fn.createEl('img');
                         image.src = window.URL.createObjectURL(files[i]);
 
-                        let title = document.createElement('input');
-                        title.placeholder = "Title";
-                        title.type = "text";
-                        title.name = "img_title[]";
+                        const title = fn.createEl('input', {
+                            placeholder : "Title",
+                            type: "text",
+                            name: "img_title[]",
+                        });
+
+                        const link = fn.createEl('input', {
+                            placeholder : "https://site.com",
+                            type: "url",
+                            name: "href",
+                        });
 
                         listItem.appendChild(image);
                         listItem.appendChild(p);
@@ -84,6 +90,7 @@ function scripts(data) {
                     list.appendChild(listItem);
                 }
 
+                preview.innerHTML = '';
                 preview.appendChild(list);
 
             }
@@ -101,7 +108,7 @@ function styles() {
         display: flex;
     }
     .x-edit .preview li {
-        width: 40%; height: 10rem; overflow: hidden; margin: 5%;
+        width: 40%; overflow: hidden; margin: 5%;
     }
     `;
 }
