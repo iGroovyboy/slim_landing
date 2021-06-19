@@ -66,14 +66,18 @@ final class NodesController
 
         if ($uploadedFiles = $this->uploadedFiles['files']) {
             $subFolder = date('Y') . DS . date('m');
-            $directory = Config::getPath('app/paths/uploads', $subFolder);
+            $urlWithoutFilename = Config::get('app/paths/storage') . DS . $subFolder;
 
-            $files = $this->uploadFiles($uploadedFiles, $directory);
+            $files = $this->uploadFiles($uploadedFiles, $urlWithoutFilename);
         }
+
+        $b = Transformer::replaceFilenamesWithUploadPaths($this->body['datatype'], $this->body, $files);
+
+        // TODO: delete old files
 
         return Node::set(
             $this->key,
-            Transformer::run($this->body['datatype'], $this->body, $files),
+            $b,
             $parent
         );
     }
@@ -95,14 +99,16 @@ final class NodesController
         foreach ($uploadedFiles as $i => $uploadedFile) {
             /** @var \Slim\Psr7\UploadedFile $uploadedFile */
             if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                $fileinfo = Storage::moveUploadedFile($directory, $uploadedFile);
+                $fullpath = Config::getPath('app/paths/public', $directory);
+                $fileinfo = Storage::moveUploadedFile($fullpath, $uploadedFile);
 
                 $id = $uploadedFile->getClientFilename();
 
-                $files[$id]['full'] = $fileinfo->getPathname();
+                $files[$id]['full'] = str_replace('\\', '/', DS . $directory . DS . $id);
 
                 if ( ! empty($this->body['thumbnailSize']) && Str::str_starts_with($uploadedFile->getClientMediaType(), 'image')) {
-                    $files[$id]['thumb'] = Image::makeThumb($fileinfo, $this->body['thumbnailSize']);
+                    $thumbnailFile =  Image::makeThumb($fileinfo, $this->body['thumbnailSize']);
+                    $files[$id]['thumb'] = str_replace('\\', '/', DS . $directory . DS . $thumbnailFile);
                 }
             }
         }
@@ -110,5 +116,5 @@ final class NodesController
         Log::info('Uploaded files: ' . count($files) . '. Files: ' . join(', ', $files));
 
         return $files;
-}
+    }
 }

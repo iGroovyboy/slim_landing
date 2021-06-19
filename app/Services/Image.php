@@ -31,15 +31,15 @@ class Image
         try {
             $img_manager = new ImageManager();
             $thumbExt    = 'jpg';
-            $thumb       = $img_manager->make($fileinfo->getPathname())
-                                       ->fit(300, 300)
-                                       ->save($img_filename, 60, $thumbExt);
+            $img_manager->make($fileinfo->getPathname())
+               ->fit(300, 300)
+               ->save($img_filename, 60, $thumbExt);
 
-            return $img_filename . $thumbExt;
+            return DS . 'thumb_' . $basename . $thumbExt;
         } catch (\Intervention\Image\Exception\MissingDependencyException $e) {
             Log::error('Thumbnail creation error: ' . $e->getMessage());
         }
 
-        return $fileinfo->getPathname();
+        return $fileinfo->getBasename();
     }
 }
