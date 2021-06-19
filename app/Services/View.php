@@ -108,6 +108,8 @@ class View
             $twigOptions['cache'] = ROOT_DIR . '/cache';
         }
 
+        $twigOptions['debug'] = true;
+
         $loader = new \Twig\Loader\FilesystemLoader($themePath);
         $loader->addPath(Config::getPath('app/paths/themes', 'default'), 'default_theme');
 
@@ -116,7 +118,10 @@ class View
             $twigOptions
         );
 
-        $twig->addExtension(new ProjectTwigExtension());
+        $twig->setExtensions([
+            new ProjectTwigExtension(),
+            new \Twig\Extension\DebugExtension(),
+        ]);
 
         $html = $twig->render("$filename.$ext", $vars);
 
