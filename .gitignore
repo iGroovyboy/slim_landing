@@ -1,8 +1,8 @@
-/vendor/
-/public/cache/
+/vendor
+/public/cache
 /.phpunit.result.cache
-/.idea/
+/.idea
 /composer.lock
 /public/themes/*
-/node_modules/
+/node_modules
 /errors.log
