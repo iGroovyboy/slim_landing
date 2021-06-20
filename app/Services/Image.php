@@ -35,7 +35,7 @@ class Image
                ->fit(300, 300)
                ->save($img_filename, 60, $thumbExt);
 
-            return DS . 'thumb_' . $basename . $thumbExt;
+            return 'thumb_' . $basename . $thumbExt;
         } catch (\Intervention\Image\Exception\MissingDependencyException $e) {
             Log::error('Thumbnail creation error: ' . $e->getMessage());
         }
