@@ -86,18 +86,18 @@ class Node extends Model
         }
 
         $parent = $this->parentKey;
-        $result = DB::query("SELECT * FROM " . static::TABLE_NAME . " WHERE key = '$key' AND parent_key = '$parent' ")->first();
+        $result = DB::query("SELECT * FROM " . static::TABLE_NAME . " WHERE key = '$key' AND parent_key = '$parent'")->first();
 
 
         return $result['value'] ? Str::maybeUnserialize($result['value']) : null;
     }
 
-    public  function set(string $key, string $value)
+    public function set(string $key, string $value)
     {
         $parent = $this->parentKey;
 
         if ($this->has($key)) {
-            $value = DB::query("UPDATE " . self::TABLE_NAME . " SET value = '$value', parent_key = '$parent' WHERE key = '$key'")->exec();
+            $value = DB::query("UPDATE " . self::TABLE_NAME . " SET value = '$value' WHERE key = '$key' AND parent_key = '$parent'")->exec();
         } else {
             $value = DB::query("INSERT INTO " . self::TABLE_NAME . " (key, value, parent_key) VALUES (?, ?, ?)", [$key, $value, $parent])->exec();
         }
