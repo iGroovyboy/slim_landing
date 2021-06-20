@@ -154,6 +154,10 @@ class DB
         echo "<br>DB_test. Table: $tableName. <br>Driver = " . self::$driver . "<br>arg: $string";
     }
 
+    /**
+     * Gets all data from sql SELECT query
+     * @return array
+     */
     public function get()
     {
         $this->st->execute();
@@ -161,6 +165,10 @@ class DB
         return $this->st->fetchAll();
     }
 
+    /**
+     * Fetches first SELECT query record
+     * @return mixed
+     */
     public function first()
     {
         $this->st->execute();
@@ -168,6 +176,11 @@ class DB
         return $this->st->fetch();
     }
 
+    /**
+     * Binds values to prepared query and runs MODIFYING sql commands
+     *
+     * @return bool
+     */
     public function exec()
     {
         return $this->st->execute();

@@ -15,28 +15,22 @@ class Node extends Model
     public const TYPE_FIELD = 'field';
     public const TYPE_BLOCK = 'block';
 
-    public function __construct()
+    private $parentKey;
+
+    public function __construct($parentKey)
     {
 //        DB::in(self::TABLE_NAME);
+        $this->parentKey = $parentKey;
     }
 
     /**
-     * @param string $type
-     * @param int|string $key
+     * @param string $string
      *
      * @return self
      */
-    public static function of(string $type = null, $key = null)
+    public static function of($parentKey = null)
     {
-        static::$parentType = $type;
-        static::$parentId   = $key;
-
-        return new static();
-    }
-
-    public function test(string $string)
-    {
-        DB::test('cookoo');
+        return new self($parentKey);
     }
 
     private static function getNestedNodesById($id, $tbl)
@@ -62,15 +56,16 @@ class Node extends Model
         return $items;
     }
 
-    public static function getAllFor($key)
+    public function getAll()
     {
-        $tbl = self::TABLE_NAME;
+        $tbl = static::TABLE_NAME;
+        $key = $this->parentKey;
 
         $data[$key] = DB::query("SELECT * FROM $tbl WHERE key = '$key'")->first();
 
-        $data[$key]['items'] = self::getNestedNodesById($data[$key]['key'], $tbl);
+        $data[$key]['items'] = static::getNestedNodesById($data[$key]['key'], $tbl);
         $data[$key] = Arr::only($data[$key], ['value', 'items']);
-        self::unsetEmptyItems($data[$key]);
+        static::unsetEmptyItems($data[$key]);
 
         return $data;
     }
@@ -84,35 +79,38 @@ class Node extends Model
 
     // Node::of('Page', 3 )::get();
     // Node::of('Page', 3 )::get('element', 'li');
-    public static function get(string $key = null)
+    public function get(string $key = null)
     {
-        $parentEmpty = empty(self::$parentType);
-        $childEmpty  = empty($key);
-
-        $hasOnlyParent = ! $parentEmpty && $childEmpty;
-        $hasOnlyChild  = $parentEmpty && ! $childEmpty;
-
-        if ($hasOnlyParent || $hasOnlyChild) {
-            // get once
-            $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key'")->first();
-        } else {
-            $parent = static::$parentId;
-            $result = DB::query("SELECT * FROM " . self::TABLE_NAME . " WHERE key = '$key' AND parent_key = '$parent' ")->first();
+        if (empty($key)) {
+            return $this->getAll();
         }
+
+        $parent = $this->parentKey;
+        $result = DB::query("SELECT * FROM " . static::TABLE_NAME . " WHERE key = '$key' AND parent_key = '$parent' ")->first();
+
 
         return $result['value'] ? Str::maybeUnserialize($result['value']) : null;
     }
 
-    public static function set(string $key, string $value, string $parent = null)
+    public  function set(string $key, string $value)
     {
-        $keyExists = self::get($key);
-        if ($keyExists) {
+        $parent = $this->parentKey;
+
+        if ($this->has($key)) {
             $value = DB::query("UPDATE " . self::TABLE_NAME . " SET value = '$value', parent_key = '$parent' WHERE key = '$key'")->exec();
         } else {
             $value = DB::query("INSERT INTO " . self::TABLE_NAME . " (key, value, parent_key) VALUES (?, ?, ?)", [$key, $value, $parent])->exec();
         }
 
         return $value;
+    }
+
+    public function has($key)
+    {
+        $parent = $this->parentKey;
+
+        return (bool)DB::query("SELECT 1 FROM " . self::TABLE_NAME . " WHERE key = '$key' AND parent_key = '$parent' ")
+                       ->first();
     }
 
     public static function delete(string $option)

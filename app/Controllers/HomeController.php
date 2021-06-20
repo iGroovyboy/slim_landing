@@ -24,8 +24,30 @@ final class HomeController extends BaseController
                 ->render($this->request->getParsedBody());
         }
 
-        $data = Node::getAllFor('home');
+        $data = Node::of('home')->get();
 
-        return $this->view->render('home', ['slug' => 'home', 'asd'=>'345', 'data' => $data['home']['items']]);
+        $gallery = [
+            (object)[
+                'src' => 'assets/images/work/w-1.jpg',
+                'title' => 'adasd',
+                'href' => 'assets/images/work/w-1.jpg',
+            ],
+            (object)[
+                'src' => 'assets/images/work/w-2.jpg',
+                'title' => 'gd dfg rerge',
+                'href' => 'assets/images/work/w-2.jpg',
+            ],
+            (object)[
+                'src' => 'assets/images/work/w-3.jpg',
+                'title' => 'fcgxxg gxxg',
+                'href' => 'assets/images/work/w-3.jpg',
+            ],
+        ];
+
+        return $this->view->render('home', [
+            'slug' => 'home',
+            'gallery' => $gallery,
+            //'data' => $data['home']['items']
+        ] + $data['home']['items'] );
     }
 }

@@ -47,7 +47,7 @@ final class NodesController
 
     public function get()
     {
-        return Node::get($this->key) ?: '';
+        return Node::of('')->get($this->key) ?: '';
     }
 
     /**
@@ -61,7 +61,7 @@ final class NodesController
         unset($this->body['parent']);
 
         if (count($this->body) === 1) {
-            return Node::set($this->key, reset($this->body), $parent);
+            return Node::of($parent)->set($this->key, reset($this->body));
         }
 
         if ($uploadedFiles = $this->uploadedFiles['files']) {
@@ -75,10 +75,9 @@ final class NodesController
 
         // TODO: delete old files
 
-        return Node::set(
+        return Node::of($parent)->set(
             $this->key,
-            $b,
-            $parent
+            $b
         );
     }
 

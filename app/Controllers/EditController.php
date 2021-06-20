@@ -10,7 +10,7 @@ class EditController extends BaseController
 {
     public function default()
     {
-        $data = Node::getAllFor('home');
+        $data = Node::of('home')->get();
 
         return $this->view->render('home', [
             'slug' => 'home',
