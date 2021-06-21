@@ -3,7 +3,8 @@ CREATE TABLE `nodes` (
     `key` TINYTEXT,
     `value` LONGTEXT,
     `type` VARCHAR(64) NOT NULL,
-    `parent_id` BIGINT,
+    `parent_key` BIGINT,
     `order` BIGINT,
-    PRIMARY KEY `id`
+    PRIMARY KEY `id`,
+    CONSTRAINT uc_key_parent UNIQUE(key,parent_key)
 ) ENGINE=MyISAM;

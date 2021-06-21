@@ -5,9 +5,9 @@ create table nodes
 			primary key autoincrement,
 	key text,
 	value text,
-	type text,
 	parent_key text,
-	"order" integer default 0 not null
+	"order" integer default 0 not null,
+	UNIQUE(key, parent_key)
 );
 
 
