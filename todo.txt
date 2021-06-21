@@ -1,3 +1,6 @@
+Options will read db and if db/table is not exist - try reading from json
+Refactor Config to use php array configs
+
 set sqlite db file to chmod 700 https://chmodcommand.com/chmod-700/
 config - from json to php arrays
 session
