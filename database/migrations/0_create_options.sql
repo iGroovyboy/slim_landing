@@ -1,14 +1,9 @@
-create table table_name
-(
-	id integer
-		constraint table_name_pk
-			primary key autoincrement,
-	name text not null,
-	value text
-);
-
-create unique index table_name_name_uindex
-    on options (name);
+CREATE TABLE `options` (
+     `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
+     `name` TINYTEXT,
+     `value` LONGTEXT,
+     PRIMARY KEY `id`,
+) ENGINE=InnoDB;
 
 INSERT INTO options (id, name, value) VALUES (1, 'debug', '1');
 INSERT INTO options (id, name, value) VALUES (2, 'theme', 'unfold');

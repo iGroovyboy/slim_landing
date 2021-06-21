@@ -1,0 +1,17 @@
+{
+    "debug": true,
+    "theme": "unfold",
+    "theme_dev": true,
+
+    "uploads": {
+        "useDateForPath": true,
+        "allowedFiletypes": [
+            "jpg","png", "webp", "gif",
+            "pdf",
+            "pptx", "xlsx", "docx",
+            "doc", "xls", "ppt",
+            "mp3", "ogg",
+            "mpeg"
+        ]
+    }
+}
