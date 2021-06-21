@@ -45,13 +45,13 @@ function scripts(data) {
                     'alt': img_title[i],
                 });
             }
-            
+
             console.log(data);
 
             formData.set('json', JSON.stringify(data));
             return formData;
         }
-        document.addEventListener('change', function (e) {
+        document.addEventListener('change', async function (e) {
             if (fn.hasClass(e.target, 'default__img-upload')) {
                 // preview.src = window.URL.createObjectURL(e.target.files[0]);
                 // image.src = window.URL.createObjectURL(input.files[0]);
@@ -68,7 +68,7 @@ function scripts(data) {
                 for (let i = 0; i < files.length; i++) {
                     let listItem = fn.createEl('li');
 
-                    if (fn.validFileType(files[i])) {
+                    if (await fn.validFileType(files[i])) {
                         preview.innerHTML = '';
 
                         const p = fn.createEl('p', {

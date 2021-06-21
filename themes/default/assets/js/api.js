@@ -18,8 +18,8 @@ export async function set(key, value) {
     return await response.json();
 }
 
-export async function getAllowedFiletypes(key) {
-    let response = await fetch(`/api/filetypes/`, {
+export async function allowedFileExtensions() {
+    let response = await fetch(`/api/uploads/allowed/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'

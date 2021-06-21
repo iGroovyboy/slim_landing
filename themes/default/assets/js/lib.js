@@ -1,3 +1,5 @@
+import * as api from './api.js';
+
 export function hasClass(elem, className) {
     return elem.classList.contains(className);
 }
@@ -7,16 +9,12 @@ export function getPos(el) {
     return {x: rect.left, y: rect.top + window.scrollY};
 }
 
-export function validFileType(file, fileTypes = null) {
-    if (null === fileTypes){
-        fileTypes = [
-            'image/jpeg',
-            'image/pjpeg',
-            'image/svg+xml',
-            'image/gif',
-            'image/webp',
-            'image/png'
-        ];
+export async function validFileType(file) {
+    const fileTypes = await api.allowedFileExtensions();
+
+    if (fileTypes === null) {
+        console.log("Couldn't fetch allowed file types");
+        return false;
     }
 
     for (let i = 0; i < fileTypes.length; i++) {
@@ -24,6 +22,8 @@ export function validFileType(file, fileTypes = null) {
             return true;
         }
     }
+    
+    console.log('Upload unallowed file type is forbidden');
 
     return false;
 }
