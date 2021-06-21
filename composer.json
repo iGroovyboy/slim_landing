@@ -12,7 +12,8 @@
         "filp/whoops": "^2.11",
         "maximebf/debugbar": "^1.16",
         "intervention/image": "^2.5",
-        "ext-fileinfo": "^7.4"
+        "ext-fileinfo": "^7.4",
+        "xobotyi/php-mime-type": "^1.2"
     },
     "autoload": {
         "psr-4": {"App\\": "app/"}

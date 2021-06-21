@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\Option;
 use App\Models\User;
 use App\Services\Config;
 use App\Services\DB\DB;
+use App\Services\Storage;
 use Slim\Routing\RouteCollectorProxy as RouteGroup;
 
 $app->add(new \App\Middleware\TrailingSlashMiddleware());
@@ -65,12 +67,25 @@ $app->group(
             \App\Controllers\Api\NodesController::class
         )->setName('nodes');
 
+        $group->get(
+            '/uploads/allowed',
+            function ($request, $response) {
+                $json = json_encode(
+                    Storage::getExtensionsMimes(
+                        Option::get('allowedFileExtensions')));
+
+                $response->getBody()->write($json);
+
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+        )->setName('uploads.allowed');
+
         /*
          * 404 api pattern
          */
         $group->any('/{uri:.*}', \App\Controllers\NotFoundController::class . ':api')->setName('api_404');
     }
-);
+); // TODO add auth middleware
 
 
 /*

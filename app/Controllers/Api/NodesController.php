@@ -6,6 +6,7 @@ namespace App\Controllers\Api;
 
 use App\DataTypes\Transformer;
 use App\Models\Node;
+use App\Models\Option;
 use App\Services\Config;
 use App\Services\Image;
 use App\Services\Log;
@@ -13,6 +14,7 @@ use App\Services\Storage;
 use App\Services\Str;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use xobotyi\MimeType;
 
 final class NodesController
 {
@@ -95,9 +97,14 @@ final class NodesController
         $files = [];
 
         // TODO: check if filetype is allowed
+        $allowedFileExtensions = Storage::getExtensionsMimes(Option::get('allowedFileExtensions'));
+
         foreach ($uploadedFiles as $i => $uploadedFile) {
+            $isUploadWithoutErrors = $uploadedFile->getError() === UPLOAD_ERR_OK;
+            $isAllowedUpload       = in_array($uploadedFile->getClientMediaType(), $allowedFileExtensions);
+
             /** @var \Slim\Psr7\UploadedFile $uploadedFile */
-            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+            if ($isUploadWithoutErrors && $isAllowedUpload) {
                 $fullpath = Config::getPath('app/paths/public', $directory);
                 $fileinfo = Storage::moveUploadedFile($fullpath, $uploadedFile);
 

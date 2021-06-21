@@ -142,7 +142,7 @@ class Config
         if ( ! file_exists($path)) {
         }
 
-        $files = array_diff(scandir($path), array('..', '.', 'readme.md'));
+        $files = array_diff(scandir($path), array('..', '.', 'readme.md', 'app.php', 'cache.php'));
 
         foreach ($files as $file) {
             self::load($file);

@@ -6,6 +6,7 @@ namespace App\Services;
 
 use Psr\Http\Message\UploadedFileInterface;
 use SplFileInfo;
+use xobotyi\MimeType;
 
 class Storage
 {
@@ -47,5 +48,20 @@ class Storage
         $uploadedFile->moveTo($targetPath);
 
         return new SplFileInfo($targetPath);
+    }
+
+    public static function getExtensionsMimes($allowedFileExtensions)
+    {
+        if ( ! is_array($allowedFileExtensions)) {
+            return MimeType::getExtensionMimes($allowedFileExtensions);
+        }
+
+        $mimes = [];
+        foreach ($allowedFileExtensions as $ext) {
+            $mimes = array_merge($mimes, array_values(MimeType::getExtensionMimes($ext)));
+        }
+        sort($mimes);
+
+        return $mimes;
     }
 }
