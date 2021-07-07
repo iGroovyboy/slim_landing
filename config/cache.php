@@ -4,7 +4,8 @@ return [
     /*
      * Overrides db option if uncommented. Recommended to uncomment and enable when developing
      */
-    // "enabled"        => false,
+    "enabled"        => false,
+    "expiresAfter"   => 604800,
 
     /*
      * Extension for a cache file

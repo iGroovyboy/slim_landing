@@ -14,6 +14,8 @@ return [
         'app'        => 'app',
     ],
 
+    'assetsDir' => 'assets',
+
     // obsolete
     'debug' => true,
     'theme' => "unfold",

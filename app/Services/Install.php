@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Services\Config\Config;
 
 class Install
 {
@@ -37,8 +38,8 @@ class Install
         array_map(function ($dir) use ($srcThemesDir, $destThemesDir) {
             mkdir($destThemesDir . $dir);
             symlink(
-                $srcThemesDir . $dir . DS . Config::$assetsDir,
-                $destThemesDir . $dir . DS . Config::$assetsDir
+                $srcThemesDir . $dir . DS . Config::get('app/assetsDir'),
+                $destThemesDir . $dir . DS . Config::get('app/assetsDir')
             );
         }, $dirs);
     }
@@ -50,11 +51,11 @@ class Install
      */
     public static function createAssetsSymlink(View $view = null): void
     {
-            $originalDir    = $view->getThemePath() . Config::$assetsDir . DS;
+            $originalDir    = $view->getThemePath() . Config::get('app/assetsDir') . DS;
             $publicThemeDir = Config::getPath('app/paths/public')
                               . Config::get('app/paths/themes')
                               . DS . $view->getTheme();
-            $link           = $publicThemeDir . DS . Config::$assetsDir . DS;
+            $link           = $publicThemeDir . DS . Config::get('app/assetsDir') . DS;
 
 
 

@@ -1,6 +1,7 @@
 <?php
 
-use App\Services\Config;
+use App\Services\Config\Config;
+use App\Services\Config\Env;
 use App\Services\DebugBar;
 use App\Services\DebugSlimCollector;
 use App\Services\Install;
@@ -27,7 +28,8 @@ error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
 
 Log::boot(\Slim\Logger::class);
 
-// Container/DI setup ----------------------------------------------------------------------
+// Container/DI setup --------------------------------------------------------------------------------------------------
+
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->addDefinitions(__DIR__ . DS . 'container.php');
 
@@ -47,23 +49,27 @@ $container = $containerBuilder->build();
 $app = SlimlandAppFactory::createFromContainer($container);
 
 
-
-
-
-// Container/DI setup OVER ----------------------------------------------------------------------
+// Container/DI setup OVER ---------------------------------------------------------------------------------------------
 
 DebugBar::get()->addCollector(new DebugSlimCollector($app));
 
-// Load Configs
-Config::setPropertyAccessor(
-    PropertyAccessor::createPropertyAccessorBuilder()
-        ->enableExceptionOnInvalidIndex()
-        ->getPropertyAccessor()
+// Load Configs --------------------------------------------------------------------------------------------------------
+
+Config::init(
+    ROOT_DIR . DS . 'config' . DS,
+    \App\Services\Config\ConfigPhpAdapter::getInstance()
 );
 Config::loadAll();
-Config::set( 'app/paths/root', ROOT_DIR );
+Config::set('app/paths/root', ROOT_DIR );
 
-// Engage Whoops error handler
+Env::init(
+    ROOT_DIR,
+    \App\Services\Config\ConfigJsonAdapter::getInstance()
+);
+Env::loadAll();
+
+// Engage Whoops error handler -----------------------------------------------------------------------------------------
+
 if (Config::get('app/debug')) {
     $whoops = new \Whoops\Run;
     $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
@@ -72,10 +78,10 @@ if (Config::get('app/debug')) {
     ini_set('display_errors', 1);
 }
 
-// Load DB Config if any
+// Load DB Config if any -----------------------------------------------------------------------------------------------
 try {
-    \App\Services\DB\DB::setDriver(Config::get('db/driver'));
-    \App\Services\DB\DB::connect(Config::get('db'));
+    \App\Services\DB\DB::setDriver(Env::get('db/driver'));
+    \App\Services\DB\DB::connect(Env::get('db'));
 } catch (Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
     Log::info('No DB config found! Will redirect to Installation page');
 }
@@ -84,3 +90,4 @@ try {
 Install::publicThemes();
 
 DebugBar::get("messages")->addMessage("Finished boot");
+

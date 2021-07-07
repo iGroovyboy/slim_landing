@@ -6,14 +6,14 @@ namespace App\Controllers;
 
 use App\Models\Node;
 use App\Models\User;
-use App\Services\Config;
+use App\Services\Config\Env;
 
 final class HomeController extends BaseController
 {
     public function default(): string
     {
         try {
-            Config::has('db/driver');
+            Env::has('db/driver');
         } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
             return (new InstallController($this->container, $this->view))
                 ->render($this->request->getParsedBody());

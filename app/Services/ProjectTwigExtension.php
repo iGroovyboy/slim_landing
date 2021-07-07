@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\Services;
 
-
-use DebugBar\StandardDebugBar;
+use App\Services\Config\Config;
 
 class ProjectTwigExtension extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface
 {
@@ -14,13 +12,13 @@ class ProjectTwigExtension extends \Twig\Extension\AbstractExtension implements 
         $debugbarRenderer = DebugBar::get()->getJavascriptRenderer();
 
         return [
-            'assets' => '/themes/' . Config::get('app/theme') . '/' . Config::$assetsDir,
-            'theme' => Config::get('app/theme'),
+            'assets' => '/' . Config::get('app/paths/themes') . '/'
+                            . Config::get('app/theme')
+                            . '/' . Config::get('app/assetsDir'),
 
+            'theme'      => Config::get('app/theme'),
             'debug_head' => $debugbarRenderer->renderHead(),
-            'debug_js' => $debugbarRenderer->render()
-
-
+            'debug_js'   => $debugbarRenderer->render(),
         ];
     }
 

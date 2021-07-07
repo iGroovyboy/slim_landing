@@ -4,7 +4,7 @@
 namespace App\Services\TemplatesCache;
 
 
-use App\Services\Config;
+use App\Services\Config\Config;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 

@@ -2,7 +2,8 @@
 
 use App\Models\Option;
 use App\Models\User;
-use App\Services\Config;
+use App\Services\Config\Config;
+use App\Services\Config\Env;
 use App\Services\DB\DB;
 use App\Services\Storage;
 use Slim\Routing\RouteCollectorProxy as RouteGroup;
@@ -27,7 +28,7 @@ $app->get('/logout', \App\Controllers\AuthController::class . ':logout')->setNam
  * TODO refactor using middleware
  */
 try {
-    Config::has('db/driver');
+    Env::has('db/driver');
 } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchIndexException $e) {
     $app->post('/api/install_db', \App\Controllers\InstallController::class . ':setupDBConnection')->setName('install_db');
 }

@@ -7,7 +7,7 @@ namespace App\Controllers\Api;
 use App\DataTypes\Transformer;
 use App\Models\Node;
 use App\Models\Option;
-use App\Services\Config;
+use App\Services\Config\Config;
 use App\Services\Image;
 use App\Services\Log;
 use App\Services\Storage;

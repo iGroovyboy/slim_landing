@@ -4,7 +4,7 @@
 namespace App\Services\DB;
 
 
-use App\Services\Config;
+use App\Services\Config\Config;
 use App\Services\Log;
 use PDO;
 use PDOStatement;

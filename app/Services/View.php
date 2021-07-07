@@ -4,6 +4,7 @@
 namespace App\Services;
 
 
+use App\Services\Config\Config;
 use App\Services\TemplatesCache\TemplateCacheItem;
 
 class View

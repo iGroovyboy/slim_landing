@@ -6,7 +6,8 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Services\Arr;
-use App\Services\Config;
+use App\Services\Config\Config;
+use App\Services\Config\Env;
 use App\Services\DB\DB;
 use App\Services\Hash;
 use App\Services\Log;
@@ -53,8 +54,8 @@ class InstallController extends BaseController
         }
 
         DB::setDriver($input['driver']);
-        Config::set('db/driver', $input['driver']);
-        Config::save();
+        Env::set('db/driver', $input['driver']);
+        Env::save('db');
 
         try {
             DB::connect($input);
