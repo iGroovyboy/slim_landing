@@ -7,3 +7,5 @@
 /node_modules
 /errors.log
 /app/config/db.json
+/public/storage
+/storage
