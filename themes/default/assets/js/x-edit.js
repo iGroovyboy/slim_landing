@@ -78,9 +78,11 @@ modalSave.addEventListener('click', async function (e) {
 
     let formData = new FormData(document.forms.node_editor);
     formData.set('parent', fn.getPageSlug());
-    formData = window.prepareForm(formData);
+    formData = window.node_editor.prepareForm(formData);
 
     const response = await api.set(key, formData);
+
+    window.node_editor = null;
 
     modalObj.hide();
 });

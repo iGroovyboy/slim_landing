@@ -14,35 +14,79 @@ function form(data) {
     <div class="preview" style="">
         <p>No files</p>
     </div>
-    <div>
-        <label for="profile_pic">Choose a file to upload</label>
-        <input class="default__img-upload" name="files[]" type="file" multiple="multiple">
-        <input type="hidden" name="datatype" value="image">
-        <input type="hidden" name="thumbnailSize" value="300x400">
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="upload-tab" data-toggle="tab" href="#upload" role="tab" aria-controls="upload" aria-selected="true">Upload image</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="link-tab" data-toggle="tab" href="#link" role="tab" aria-controls="link" aria-selected="false">Link to image</a>
+      </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+            <div>
+                <label for="profile_pic">Choose a file to upload</label>
+                <input class="default__img-upload" name="files[]" type="file">
+                <input type="hidden" name="thumbnailSize" value="300x400">
+            </div>
+        </div>
+        <div class="tab-pane" id="link" role="tabpanel" aria-labelledby="link-tab">
+            <label for="profile_pic">Image URL</label>
+            <input class="default__img-src" name="linked_src" type="text">
+            <br>
+
+            <label for="profile_pic">Title</label>
+            <input class="default__img-title" name="linked_title" type="text">
+            <br>
+
+            <label for="profile_pic">Link</label>
+            <input class="default__img-link" name="linked_href" type="text">
+        </div>
     </div>
+
+    <input type="hidden" name="datatype" value="image">
+    <input type="hidden" name="thumbnailSize" value="300x400">
 </form>
 `;
 }
 
 function scripts(data) {
     return (() => {
-        window.prepareForm = function (formData) {
+        window.node_editor = {};
+        window.node_editor.image_type = 'upload';
+
+        window.node_editor.prepareForm = function (formData) {
             // const data = {
             //     'src':  formData.get("files[]").name,
             //     'link': formData.get("link[]"),
             //     'alt':  formData.get("img_title[]"),
             // };
 
-            const keys = ['files[]', 'link[]', 'img_title[]'];
-
-            const {files, link, img_title} = fn.prepareFormDataForExport(formData, keys);
-
             const data = []
-            for (let [i, file] of files.entries()) {
+
+            if ('upload' === window.node_editor.image_type) {
+                const keys = ['files[]', 'upload_link[]', 'upload_title[]'];
+
+                const {files, upload_link, upload_title} = fn.prepareFormDataForExport(formData, keys);
+
+                for (let [i, file] of files.entries()) {
+                    data.push({
+                        'src':  file.name,
+                        'link': upload_link[i],
+                        'alt':  upload_title[i],
+                    });
+                }
+            }
+
+            if ('link' === window.node_editor.image_type) {
                 data.push({
-                    'src': file.name,
-                    'link': link[i],
-                    'alt': img_title[i],
+                    'src':  formData.get("linked_src"),
+                    'link': formData.get("linked_href"),
+                    'alt':  formData.get("linked_title"),
                 });
             }
 
@@ -51,6 +95,21 @@ function scripts(data) {
             formData.set('json', JSON.stringify(data));
             return formData;
         }
+        document.addEventListener('click', function (e) {
+            let files = document.querySelector('form[name="node_editor"] .default__img-upload'),
+                preview = document.querySelector('form[name="node_editor"] .preview');
+
+            if (e.target.id === 'upload-tab'){
+                window.node_editor.image_type = 'upload';
+            }
+
+            if (e.target.id === 'link-tab'){
+                window.node_editor.image_type = 'link';
+                preview.innerHTML = '<p>No files</p>';
+                files.value = '';
+                console.log('files', files);
+            }
+        });
         document.addEventListener('change', async function (e) {
             if (fn.hasClass(e.target, 'default__img-upload')) {
                 // preview.src = window.URL.createObjectURL(e.target.files[0]);
@@ -81,13 +140,13 @@ function scripts(data) {
                         const title = fn.createEl('input', {
                             placeholder : "Title",
                             type: "text",
-                            name: "img_title[]",
+                            name: "upload_title[]",
                         });
 
                         const link = fn.createEl('input', {
                             placeholder : "https://site.com",
                             type: "text",
-                            name: "link[]",
+                            name: "upload_link[]",
                         });
 
                         listItem.appendChild(image);

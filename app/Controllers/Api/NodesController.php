@@ -73,13 +73,16 @@ final class NodesController
             $files = $this->uploadFiles($uploadedFiles, $urlWithoutFilename);
         }
 
-        $b = Transformer::replaceFilenamesWithUploadPaths($this->body['datatype'], $this->body, $files);
+        $body = $this->body['json'];
 
-        // TODO: delete old files
+        if ($files) {
+            // TODO: delete old files ??
+            $body = Transformer::replaceFilenamesWithUploadPaths($this->body['datatype'], $this->body, $files);
+        }
 
         return Node::of($parent)->set(
             $this->key,
-            $b
+            $body
         );
     }
 
